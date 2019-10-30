@@ -14,7 +14,7 @@ import (
 	"syscall"
 )
 
-var TOKEN = ""
+var TOKEN = os.Getenv("DISCORD_BOT_TOKEN")
 
 func main() {
 	log.SetLevel(log.DebugLevel)
