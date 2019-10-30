@@ -2,7 +2,7 @@ package chat_tools
 
 import (
 	"github.com/bwmarrin/discordgo"
-	"github.com/plally/modular_bot/command"
+	"github.com/plally/discord_modular_bot/command"
 	log "github.com/sirupsen/logrus"
 	"math/rand"
 	"time"
@@ -15,8 +15,7 @@ func init() {
 
 	Module := command.RegisterModule("chat_tools")
 	Module.RegisterCommandFunc(">coinflip", coinFlip)
-	Module.RegisterCommandFunc(">avatar", getAvatar)
-	Module.RegisterCommandFunc(">info", getMemberInfo)
+	Module.RegisterCommandFunc(">info", getDiscordObjectInfo)
 	source := rand.NewSource(time.Now().UnixNano())
 	random = rand.New(source)
 }

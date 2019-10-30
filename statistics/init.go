@@ -3,9 +3,10 @@ package statistics
 import (
 	"github.com/bwmarrin/discordgo"
 	influx "github.com/influxdata/influxdb1-client/v2"
-	"github.com/plally/modular_bot/command"
+	"github.com/plally/discord_modular_bot/command"
 	log "github.com/sirupsen/logrus"
 	"time"
+	"os"
 )
 
 var client = struct {
@@ -17,17 +18,19 @@ var client = struct {
 		Database: "bot_test_db",
 	},
 }
-
+var module *command.Module
 func init() {
-	command.RegisterModule("stats").OnEnable = OnEnable
+	module = command.RegisterModule("stats")
+	module.OnEnable = OnEnable
 }
 
 func OnEnable(b *command.Bot) {
 	b.AddHandler(onBotReady)
 }
+
 func onBotReady(s *discordgo.Session, ready *discordgo.Ready) {
 	c, err := influx.NewHTTPClient(influx.HTTPConfig{
-		Addr: "http://127.0.0.1:8086",
+		Addr: os.Getenv("INFLUXDB_ADDRESS"),
 	})
 
 	go func() {

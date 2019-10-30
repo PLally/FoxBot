@@ -2,21 +2,23 @@ package main
 
 import (
 	"github.com/bwmarrin/discordgo"
-	_ "github.com/plally/modular_bot/chat_tools"
-	"github.com/plally/modular_bot/command"
-	_ "github.com/plally/modular_bot/debug"
-	_ "github.com/plally/modular_bot/nsfw"
-	_ "github.com/plally/modular_bot/random"
-	_ "github.com/plally/modular_bot/statistics"
+	"github.com/plally/discord_modular_bot/command"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
 	"syscall"
+
+	_ "github.com/plally/discord_modular_bot/debug"
+	_ "github.com/plally/discord_modular_bot/nsfw"
+	_ "github.com/plally/discord_modular_bot/random"
+	_ "github.com/plally/discord_modular_bot/statistics"
+	_ "github.com/plally/discord_modular_bot/chat_tools"
 )
 
 var TOKEN = os.Getenv("DISCORD_BOT_TOKEN")
 
 func main() {
+
 	log.SetLevel(log.DebugLevel)
 	log.SetFormatter(&log.TextFormatter{ForceColors: true})
 	log.SetOutput(os.Stdout)

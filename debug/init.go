@@ -2,7 +2,7 @@ package debug
 
 import (
 	"github.com/bwmarrin/discordgo"
-	"github.com/plally/modular_bot/command"
+	"github.com/plally/discord_modular_bot/command"
 	log "github.com/sirupsen/logrus"
 	"runtime"
 	"strconv"

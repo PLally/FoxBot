@@ -1,31 +1,37 @@
 package chat_tools
 
 import (
-	"github.com/bwmarrin/discordgo"
-	"github.com/plally/modular_bot/command"
-
-	"fmt"
 	"strconv"
 	"time"
+	"github.com/bwmarrin/discordgo"
+	"github.com/plally/discord_modular_bot/command"
+	"fmt"
 )
 
-func getAvatar(s *discordgo.Session, event *command.TextCommandEvent) (reply string) {
-	if len(event.Message.Mentions) < 1 {
-		return event.Message.Author.AvatarURL("1024")
-	}
-	return event.Message.Mentions[0].AvatarURL("1024")
+
+
+type Snowflake struct {
+	ID                uint64
+	Increment         uint64
+	InternalProcessID uint64
+	InternalWorkerID  uint64
+	TimestampDiscord  uint64
+	TimestampUnix     uint64
+	Time              time.Time
 }
 
-func getMemberInfo(s *discordgo.Session, event *command.TextCommandEvent) (reply string) {
+
+func getDiscordObjectInfo(s *discordgo.Session, event *command.TextCommandEvent) (reply string) {
 	//TODO support channels, snowflakes, voice channels, emojis
 	var user *discordgo.User
 	if len(event.Message.Mentions) < 1 {
 		return
 	}
+	user = event.Message.Mentions[0]
 
 	embed := command.NewEmbed()
 	embed.SetThumbnailUrl(user.AvatarURL("1024"))
-	snowflake, _ := getSnowflake(user.ID)
+	snowflake, _ := GetSnowflake(user.ID)
 	snowflakeString := fmt.Sprintf(
 		"```ID: %v\nIncrement: %d\nInternalProcessID: %d\nInternalWorkderID: %d\nTimestamp: %v```",
 		snowflake.ID,
@@ -41,18 +47,7 @@ func getMemberInfo(s *discordgo.Session, event *command.TextCommandEvent) (reply
 	return ""
 
 }
-
-type Snowflake struct {
-	ID                uint64
-	Increment         uint64
-	InternalProcessID uint64
-	InternalWorkerID  uint64
-	TimestampDiscord  uint64
-	TimestampUnix     uint64
-	Time              time.Time
-}
-
-func getSnowflake(id string) (Snowflake, error) {
+func GetSnowflake(id string) (Snowflake, error) {
 	snowflake, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		return Snowflake{}, err
