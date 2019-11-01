@@ -87,7 +87,7 @@ func (b *Bot) CheckCommands(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			log.Infof("Executing command %s", cmd.Name)
 			event := TextCommandEvent{
-				Args:    m.Content[len(cmd.Name):],
+				Args:    m.Content[len(cmd.Name)+1:],
 				Command: &cmd,
 				Message: m,
 			}
