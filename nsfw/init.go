@@ -31,7 +31,7 @@ func e621Command(s *discordgo.Session, event *command.TextCommandEvent) (reply s
 	if !channel.NSFW {
 		return "Command Only Available In NSFW channels"
 	}
-	posts := E6Session.getPosts(strings.Split(event.Args, " "), 1)
+	posts := E6Session.getPosts(strings.Split("order:random "+event.Args, " "), 1)
 
 	if len(posts) < 1 {
 		return "No posts were found with those tags "
