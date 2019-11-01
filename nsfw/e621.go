@@ -80,11 +80,14 @@ func (e *E621Session) getPosts(tags []string, limit int) (posts []E621Post) {
 		"tags":  strings.Join(tags, " "),
 		"limit": strconv.Itoa(limit),
 	})
-
+	if err != nil {
+		return
+	}
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return posts
+		return
 	}
+
 	json.Unmarshal(data, &posts)
 	return posts
 

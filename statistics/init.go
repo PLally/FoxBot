@@ -15,7 +15,7 @@ var client = struct {
 	messageBatch  influx.BatchPoints
 }{
 	messageConfig: influx.BatchPointsConfig{
-		Database: "bot_test_db",
+		Database: "discord_bot_stats",
 	},
 }
 var module *command.Module
@@ -31,6 +31,8 @@ func OnEnable(b *command.Bot) {
 func onBotReady(s *discordgo.Session, ready *discordgo.Ready) {
 	c, err := influx.NewHTTPClient(influx.HTTPConfig{
 		Addr: os.Getenv("INFLUXDB_ADDRESS"),
+		Password: os.Getenv("INFLUXDB_PASSWORD"),
+		Username: os.Getenv("INFLUXDB_USERNAME"),
 	})
 
 	go func() {
@@ -38,15 +40,11 @@ func onBotReady(s *discordgo.Session, ready *discordgo.Ready) {
 		client.messageBatch, err = influx.NewBatchPoints(client.messageConfig)
 
 		if err != nil {
-			log.Error(err)
+			log.Error("InfluxDB client failed: " + err.Error())
 			return
 		}
 		s.AddHandler(onMessageCreate)
 		defer client.Close()
-		if err != nil {
-			log.Error("InfluxDB client failed: " + err.Error())
-			return
-		}
 		for {
 			err := client.Client.Write(client.messageBatch)
 			if err != nil {

@@ -6,19 +6,21 @@ import (
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
+	"os"
 )
 
 var E6Session E621Session = E621Session{
-	BaseURL:   "https://e621.net",
-	UserAgent: "",
+	BaseURL:   "https://e621.net/",
+	UserAgent: "FoxBot/0.1",
 	Client:    &http.Client{},
+	Username: os.Getenv("E621_USERNAME"),
+	ApiKey: os.Getenv("E621_TOKEN"),
 }
 
 func init() {
 	log.SetFormatter(&log.TextFormatter{ForceColors: true})
 	Module := command.RegisterModule("nsfw")
 	Module.RegisterCommandFunc(">e621", e621Command)
-
 }
 
 func e621Command(s *discordgo.Session, event *command.TextCommandEvent) (reply string) {
@@ -30,6 +32,7 @@ func e621Command(s *discordgo.Session, event *command.TextCommandEvent) (reply s
 		return "Command Only Available In NSFW channels"
 	}
 	posts := E6Session.getPosts(strings.Split(event.Args, " "), 1)
+
 	if len(posts) < 1 {
 		return "No posts were found with those tags "
 	}

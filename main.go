@@ -33,7 +33,7 @@ func main() {
 	bot.EnableModule("chat_tools")
 	bot.EnableModule("random")
 	bot.EnableModule("nsfw")
-	// bot.EnableModule("stats")
+	bot.EnableModule("stats")
 
 	err = session.Open()
 	if err != nil {
