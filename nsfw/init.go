@@ -10,7 +10,7 @@ import (
 )
 
 var E6Session E621Session = E621Session{
-	BaseURL:   "https://e621.net/",
+	BaseURL:   "https://e621.net",
 	UserAgent: "FoxBot/0.1",
 	Client:    &http.Client{},
 	Username: os.Getenv("E621_USERNAME"),
