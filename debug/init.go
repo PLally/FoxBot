@@ -46,5 +46,5 @@ func helpCommand(s *discordgo.Session, event *command.TextCommandEvent) (reply s
 	}
 	_, err := s.ChannelMessageSendEmbed(event.Message.ChannelID, e.MessageEmbed)
 	fmt.Println(err)
-	return "TEST"
+	return
 }
