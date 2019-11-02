@@ -28,6 +28,7 @@ type TextCommandEvent struct {
 	Command *TextCommand
 	Message *discordgo.MessageCreate
 	Args    string
+	Bot *Bot
 }
 
 type commandCallback func(*discordgo.Session, *TextCommandEvent) string
@@ -87,9 +88,10 @@ func (b *Bot) CheckCommands(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			log.Infof("Executing command %s", cmd.Name)
 			event := TextCommandEvent{
-				Args:    m.Content[len(cmd.Name)+1:],
+				Args:    strings.Trim(m.Content[len(cmd.Name):], " "),
 				Command: &cmd,
 				Message: m,
+				Bot: b,
 			}
 			reply := cmd.Callback(s, &event)
 			if reply != "" {
