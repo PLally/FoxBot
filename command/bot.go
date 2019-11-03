@@ -7,6 +7,7 @@ import (
 )
 
 //TODO refactor command package to allow disabling and enabling modules per guild
+//TODO better argument system, something similar to flag
 //types
 type Bot struct {
 	*discordgo.Session
@@ -77,7 +78,7 @@ func (b *Bot) DisableModule(name string) {
 }
 
 func (b *Bot) CheckCommands(s *discordgo.Session, m *discordgo.MessageCreate) {
-	commandName := getFirstWord(m.Content)
+	commandName := GetFirstWord(m.Content)
 	for _, module := range b.EnabledModules {
 		if !isModuleEnabledInGuild(m.GuildID) {
 			continue
@@ -137,7 +138,7 @@ func isModuleEnabledInGuild(guildID string) bool {
 	return true
 }
 
-func getFirstWord(s string) string {
+func GetFirstWord(s string) string {
 	i := strings.IndexByte(s, " "[0])
 	if i == -1 {
 		return s
