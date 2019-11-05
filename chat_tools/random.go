@@ -1,30 +1,18 @@
-package random
+package chat_tools
 
 import (
+	log "github.com/sirupsen/logrus"
+	"github.com/plally/discord_modular_bot/command"
+
+	"github.com/bwmarrin/discordgo"
+	"strings"
+	"net/http"
+	"mime"
+	"io/ioutil"
 	"encoding/json"
 	"fmt"
-	"github.com/bwmarrin/discordgo"
-	"github.com/plally/discord_modular_bot/command"
-	log "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"math/rand"
-	"mime"
-	"net/http"
-	"strings"
-	"time"
 )
 
-var random *rand.Rand
-
-func init() {
-	log.SetFormatter(&log.TextFormatter{ForceColors: true})
-
-	Module := command.RegisterModule("random")
-	Module.RegisterCommandFunc(">random", randomCommand)
-
-	source := rand.NewSource(time.Now().UnixNano())
-	random = rand.New(source)
-}
 
 var randomHandlers = map[string]func(s *discordgo.Session, m *discordgo.MessageCreate) string{
 	"fox":  randomFox,
@@ -34,7 +22,11 @@ var randomHandlers = map[string]func(s *discordgo.Session, m *discordgo.MessageC
 
 func randomCommand(s *discordgo.Session, event *command.TextCommandEvent) (reply string) {
 	randomType := strings.TrimSpace(strings.Split(event.Message.Content, " ")[1])
-	return randomHandlers[randomType](s, event.Message)
+	r, ok := randomHandlers[randomType]
+	if !ok {
+		return "Type not supported"
+	}
+	return r(s, event.Message)
 }
 
 func randomFox(s *discordgo.Session, m *discordgo.MessageCreate) string {
