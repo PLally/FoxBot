@@ -59,6 +59,7 @@ func (b *Bot) EnableModule(name string) {
 	m, ok := Modules[name]
 	if !ok {
 		log.Warnf("Module %s doesn't exist", name)
+		return
 	}
 	m.OnEnable(b)
 	b.EnabledModules = append(b.EnabledModules, m)

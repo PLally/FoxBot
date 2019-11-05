@@ -30,7 +30,6 @@ func main() {
 	bot := command.NewBot(session)
 	bot.EnableModule("debug")
 	bot.EnableModule("chat_tools")
-	bot.EnableModule("random")
 	bot.EnableModule("nsfw")
 	bot.EnableModule("stats")
 
