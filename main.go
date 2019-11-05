@@ -10,7 +10,6 @@ import (
 
 	_ "github.com/plally/discord_modular_bot/debug"
 	_ "github.com/plally/discord_modular_bot/nsfw"
-	_ "github.com/plally/discord_modular_bot/random"
 	_ "github.com/plally/discord_modular_bot/statistics"
 	_ "github.com/plally/discord_modular_bot/chat_tools"
 )
