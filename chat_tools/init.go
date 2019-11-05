@@ -16,6 +16,7 @@ func init() {
 	Module := command.RegisterModule("chat_tools")
 	Module.RegisterCommandFunc(">coinflip", coinFlip)
 	Module.RegisterCommandFunc(">info", getDiscordObjectInfo)
+	Module.RegisterCommandFunc(">random", randomCommand)
 	source := rand.NewSource(time.Now().UnixNano())
 	random = rand.New(source)
 }
