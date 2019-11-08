@@ -1,18 +1,17 @@
 package chat_tools
 
 import (
-	log "github.com/sirupsen/logrus"
 	"github.com/plally/discord_modular_bot/command"
+	log "github.com/sirupsen/logrus"
 
-	"github.com/bwmarrin/discordgo"
-	"strings"
-	"net/http"
-	"mime"
-	"io/ioutil"
 	"encoding/json"
 	"fmt"
+	"github.com/bwmarrin/discordgo"
+	"io/ioutil"
+	"mime"
+	"net/http"
+	"strings"
 )
-
 
 var randomHandlers = map[string]func(s *discordgo.Session, m *discordgo.MessageCreate) string{
 	"fox":  randomFox,
@@ -21,7 +20,7 @@ var randomHandlers = map[string]func(s *discordgo.Session, m *discordgo.MessageC
 }
 
 func randomCommand(s *discordgo.Session, event *command.TextCommandEvent) (reply string) {
-	randomType := strings.TrimSpace(strings.Split(event.Message.Content, " ")[1])
+	randomType := strings.TrimSpace(event.Args)
 	r, ok := randomHandlers[randomType]
 	if !ok {
 		return "Type not supported"
