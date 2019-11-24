@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 	"path"
+	"fmt"
 )
 
 var E6Session E621Session = E621Session{
@@ -38,12 +39,21 @@ func e621Command(s *discordgo.Session, event *command.TextCommandEvent) (reply s
 		return "No posts were found with those tags "
 	}
 	post := posts[0]
-	e := command.NewEmbed()
-	e.SetTitle("E621", post.PostURL())
-	contentUrl := GetValidContentURL(post)
-	e.SetImageUrl(contentUrl)
-	e.MessageEmbed.Description = strings.Join(post.Artist, ", ")
 
+	contentUrl := GetValidContentURL(post)
+	description := strings.Builder{}
+	for _, artist := range post.Artist {
+		artistString := fmt.Sprintf("[%[1]v](https://e621.net/post?tags=%[1]v)", artist)
+		description.WriteString(artistString)
+	}
+	if contentUrl != post.FileURL {
+		description.WriteString("\n*Click **E621 Post** to view content in its original form*")
+	}
+
+	e := command.NewEmbed()
+	e.SetTitle("E621 Post", post.PostURL())
+	e.SetImageUrl(contentUrl)
+	e.Description = description.String()
 	s.ChannelMessageSendEmbed(event.Message.ChannelID, e.MessageEmbed)
 	return ""
 }
