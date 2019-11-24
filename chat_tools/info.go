@@ -1,14 +1,12 @@
 package chat_tools
 
 import (
-	"strconv"
-	"time"
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/plally/discord_modular_bot/command"
-	"fmt"
+	"strconv"
+	"time"
 )
-
-
 
 type Snowflake struct {
 	ID                uint64
@@ -19,7 +17,6 @@ type Snowflake struct {
 	TimestampUnix     uint64
 	Time              time.Time
 }
-
 
 func getDiscordObjectInfo(s *discordgo.Session, event *command.TextCommandEvent) (reply string) {
 	//TODO support channels, snowflakes, voice channels, emojis
@@ -40,7 +37,7 @@ func getDiscordObjectInfo(s *discordgo.Session, event *command.TextCommandEvent)
 		snowflake.InternalWorkerID,
 		snowflake.Time.UTC().String(),
 	)
-	embed.SetTitle(user.String())
+	embed.SetTitle(user.String(), "")
 	embed.AddField("Snowflake Info", snowflakeString, true)
 	s.ChannelMessageSendEmbed(event.Message.ChannelID, embed.MessageEmbed)
 
