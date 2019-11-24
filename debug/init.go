@@ -1,13 +1,13 @@
 package debug
 
 import (
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/plally/discord_modular_bot/command"
 	log "github.com/sirupsen/logrus"
 	"runtime"
 	"strconv"
 	"strings"
-	"fmt"
 )
 
 func init() {
@@ -32,7 +32,7 @@ func botStatus(s *discordgo.Session, event *command.TextCommandEvent) (reply str
 
 func helpCommand(s *discordgo.Session, event *command.TextCommandEvent) (reply string)  {
 	e := command.NewEmbed()
-	e.SetTitle("Command List")
+	e.SetTitle("Command List", "")
 	for _, module := range event.Bot.EnabledModules {
 		var b strings.Builder
 		for _, cmd := range module.Commands {

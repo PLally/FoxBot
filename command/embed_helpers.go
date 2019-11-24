@@ -18,8 +18,9 @@ func (e *Embed) AddField(name, value string, inline bool) {
 	})
 }
 
-func (e *Embed) SetTitle(title string) {
+func (e *Embed) SetTitle(title, url string) {
 	e.Title = title
+	e.URL = url
 }
 
 func (e *Embed) SetImageUrl(url string) {

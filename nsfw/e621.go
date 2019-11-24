@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"fmt"
 )
 
 type JsonTime struct {
@@ -57,7 +58,11 @@ type E621Session struct {
 	Client    *http.Client
 }
 
-func (e *E621Session) get(url string, params map[string]string) (*http.Response, error) {
+func (p *E621Post) PostURL() string {
+ return fmt.Sprintf("https://e621.net/post/show/%v", p.ID)
+}
+
+func (e *E621Session) Get(url string, params map[string]string) (*http.Response, error) {
 	params["password_hash"] = e.ApiKey
 	params["login"] = e.Username
 
@@ -75,8 +80,8 @@ func (e *E621Session) get(url string, params map[string]string) (*http.Response,
 	return e.Client.Do(req)
 }
 
-func (e *E621Session) getPosts(tags []string, limit int) (posts []E621Post) {
-	resp, err := e.get("/post/index.json", map[string]string{
+func (e *E621Session) GetPosts(tags []string, limit int) (posts []*E621Post) {
+	resp, err := e.Get("/post/index.json", map[string]string{
 		"tags":  strings.Join(tags, " "),
 		"limit": strconv.Itoa(limit),
 	})
