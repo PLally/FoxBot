@@ -8,10 +8,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	_ "github.com/plally/discord_modular_bot/debug"
-	_ "github.com/plally/discord_modular_bot/nsfw"
-	_ "github.com/plally/discord_modular_bot/statistics"
-	_ "github.com/plally/discord_modular_bot/chat_tools"
+	_ "github.com/plally/discord_modular_bot/modules/debug"
+	_ "github.com/plally/discord_modular_bot/modules/nsfw"
+	_ "github.com/plally/discord_modular_bot/modules/statistics"
+	_ "github.com/plally/discord_modular_bot/modules/chat_tools"
 )
 
 var TOKEN = os.Getenv("DISCORD_BOT_TOKEN")

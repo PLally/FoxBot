@@ -17,7 +17,8 @@ var client = struct {
 var module *command.Module
 func init() {
 	module = command.RegisterModule("stats")
-	module.RegisterCommandFunc(">stats", stats)
+	module.RegisterCommandFunc(">user_stats", userStatsCommand)
+	module.RegisterCommandFunc(">stats", guildStatsCommand)
 	module.OnEnable = OnEnable
 }
 

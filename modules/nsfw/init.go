@@ -1,14 +1,14 @@
 package nsfw
 
 import (
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/plally/discord_modular_bot/command"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
-	"strings"
 	"path"
-	"fmt"
+	"strings"
 )
 
 var E6Session E621Session = E621Session{

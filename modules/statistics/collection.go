@@ -2,10 +2,10 @@ package statistics
 
 import (
 	"github.com/bwmarrin/discordgo"
-	"os"
-	"time"
 	influx "github.com/influxdata/influxdb1-client/v2"
 	log "github.com/sirupsen/logrus"
+	"os"
+	"time"
 )
 
 // statistics collection
@@ -45,12 +45,12 @@ func onBotReady(s *discordgo.Session, ready *discordgo.Ready) {
 
 func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	tags := map[string]string{
-		"user_id":    m.Author.ID,
 		"guild_id":   m.GuildID,
 		"channel_id": m.ChannelID,
 	}
 	fields := map[string]interface{}{
 		"quantity": 1,
+		"user_id":    m.Author.ID,
 	}
 	point, err := influx.NewPoint("discord_messages", tags, fields, time.Now().UTC())
 	if err != nil {
