@@ -14,27 +14,13 @@ type Bot struct {
 	EnabledModules []*Module
 }
 
-type TextCommand struct {
-	Name     string
-	Callback commandCallback
-}
-
 type Module struct {
 	Name     string
-	Commands []TextCommand
+	Commands []Command
 	OnEnable func(*Bot)
 }
 
-type TextCommandEvent struct {
-	Command *TextCommand
-	Message *discordgo.MessageCreate
-	Args    string
-	Bot *Bot
-}
 
-type commandCallback func(*discordgo.Session, *TextCommandEvent) string
-
-//
 var Modules = make(map[string]*Module)
 
 // bot methods
@@ -89,13 +75,13 @@ func (b *Bot) CheckCommands(s *discordgo.Session, m *discordgo.MessageCreate) {
 				continue
 			}
 			log.Infof("Executing command %s", cmd.Name)
-			event := TextCommandEvent{
-				Args:    strings.Trim(m.Content[len(cmd.Name):], " "),
-				Command: &cmd,
+			ctx := &CommandContext{
+				InvokedCommand: &cmd,
 				Message: m,
+				Args: parseCommand(m.Content),
 				Bot: b,
 			}
-			reply := cmd.Callback(s, &event)
+			reply := cmd.Callback(ctx)
 			if reply != "" {
 				s.ChannelMessageSend(m.ChannelID, reply)
 			}
@@ -111,7 +97,7 @@ func RegisterModule(name string) *Module {
 	}
 	m := &Module{
 		name,
-		make([]TextCommand, 0),
+		make([]Command, 0),
 		func(*Bot) {},
 	}
 	Modules[name] = m
@@ -119,15 +105,15 @@ func RegisterModule(name string) *Module {
 	return m
 }
 
-func (m *Module) RegisterCommandFunc(name string, callback commandCallback) TextCommand {
-	cmd := TextCommand{
+func (m *Module) RegisterCommandFunc(name string, callback CommandCallback) Command {
+	cmd := Command {
 		Name:     name,
 		Callback: callback,
 	}
 	return m.RegisterCommand(cmd)
 }
 
-func (m *Module) RegisterCommand(c TextCommand) TextCommand {
+func (m *Module) RegisterCommand(c Command) Command {
 	log.Infof("Registered command %s in module %s", c.Name, m.Name)
 	m.Commands = append(m.Commands, c)
 	return c

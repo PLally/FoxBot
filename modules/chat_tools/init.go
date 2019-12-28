@@ -1,7 +1,6 @@
 package chat_tools
 
 import (
-	"github.com/bwmarrin/discordgo"
 	"github.com/plally/discord_modular_bot/command"
 	log "github.com/sirupsen/logrus"
 	"math/rand"
@@ -21,7 +20,7 @@ func init() {
 	random = rand.New(source)
 }
 
-func coinFlip(s *discordgo.Session, event *command.TextCommandEvent) (reply string) {
+func coinFlip(ctx *command.CommandContext) (reply string) {
 	coinSides := []string{
 		"heads",
 		"tails",

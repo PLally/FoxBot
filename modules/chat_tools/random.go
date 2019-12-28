@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"mime"
 	"net/http"
-	"strings"
 )
 
 var randomHandlers = map[string]func(s *discordgo.Session, m *discordgo.MessageCreate) string{
@@ -19,13 +18,13 @@ var randomHandlers = map[string]func(s *discordgo.Session, m *discordgo.MessageC
 	"user": randomUser,
 }
 
-func randomCommand(s *discordgo.Session, event *command.TextCommandEvent) (reply string) {
-	randomType := strings.TrimSpace(event.Args)
+func randomCommand(ctx *command.CommandContext) (reply string) {
+	randomType := ctx.Args[1]
 	r, ok := randomHandlers[randomType]
 	if !ok {
 		return "Type not supported"
 	}
-	return r(s, event.Message)
+	return r(ctx.Bot.Session,ctx.Message)
 }
 
 func randomFox(s *discordgo.Session, m *discordgo.MessageCreate) string {

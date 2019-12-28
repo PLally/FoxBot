@@ -18,13 +18,13 @@ type Snowflake struct {
 	Time              time.Time
 }
 
-func getDiscordObjectInfo(s *discordgo.Session, event *command.TextCommandEvent) (reply string) {
+func getDiscordObjectInfo(ctx *command.CommandContext) (reply string) {
 	//TODO support channels, snowflakes, voice channels, emojis
 	var user *discordgo.User
-	if len(event.Message.Mentions) < 1 {
+	if len(ctx.Message.Mentions) < 1 {
 		return
 	}
-	user = event.Message.Mentions[0]
+	user = ctx.Message.Mentions[0]
 
 	embed := command.NewEmbed()
 	embed.SetThumbnailUrl(user.AvatarURL("1024"))
@@ -39,7 +39,7 @@ func getDiscordObjectInfo(s *discordgo.Session, event *command.TextCommandEvent)
 	)
 	embed.SetTitle(user.String(), "")
 	embed.AddField("Snowflake Info", snowflakeString, true)
-	s.ChannelMessageSendEmbed(event.Message.ChannelID, embed.MessageEmbed)
+	ctx.Bot.ChannelMessageSendEmbed(ctx.Message.ChannelID, embed.MessageEmbed)
 
 	return ""
 

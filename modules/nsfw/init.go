@@ -2,7 +2,6 @@ package nsfw
 
 import (
 	"fmt"
-	"github.com/bwmarrin/discordgo"
 	"github.com/plally/discord_modular_bot/command"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -25,15 +24,15 @@ func init() {
 	Module.RegisterCommandFunc(">e621", e621Command)
 }
 
-func e621Command(s *discordgo.Session, event *command.TextCommandEvent) (reply string) {
-	channel, err := s.Channel(event.Message.ChannelID)
+func e621Command(ctx *command.CommandContext) (reply string) {
+	channel, err := ctx.Bot.Channel(ctx.Message.ChannelID)
 	if err != nil {
 		return ""
 	}
 	if !channel.NSFW {
 		return "Command Only Available In NSFW channels"
 	}
-	posts := E6Session.GetPosts(strings.Split("order:random "+event.Args, " "), 1)
+	posts := E6Session.GetPosts(strings.Split("order:random "+strings.Join(ctx.Args[1:]," "), " "), 1)
 
 	if len(posts) < 1 {
 		return "No posts were found with those tags "
@@ -54,7 +53,7 @@ func e621Command(s *discordgo.Session, event *command.TextCommandEvent) (reply s
 	e.SetTitle("E621 Post", post.PostURL())
 	e.SetImageUrl(contentUrl)
 	e.Description = description.String()
-	s.ChannelMessageSendEmbed(event.Message.ChannelID, e.MessageEmbed)
+	ctx.Bot.ChannelMessageSendEmbed(ctx.Message.ChannelID, e.MessageEmbed)
 	return ""
 }
 

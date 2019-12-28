@@ -7,9 +7,9 @@ import (
 	"github.com/plally/discord_modular_bot/command"
 	log "github.com/sirupsen/logrus"
 )
-func userStatsCommand(s *discordgo.Session, event *command.TextCommandEvent) (reply string) {
-	for _, user := range event.Message.Mentions {
-		return userStats(s, user, event.Message.GuildID)
+func userStatsCommand(ctx *command.CommandContext) (reply string) {
+	for _, user := range ctx.Message.Mentions {
+		return userStats(ctx.Bot.Session, user, ctx.Message.GuildID)
 	}
 	return
 }
@@ -31,8 +31,8 @@ func userStats(s *discordgo.Session, user *discordgo.User, guildID string) (repl
 	return fmt.Sprintf("```%v messages```", values[0][1])
 }
 
-func guildStatsCommand(s *discordgo.Session, event *command.TextCommandEvent) (reply string) {
-	guildID := event.Message.GuildID
+func guildStatsCommand(ctx *command.CommandContext) (reply string) {
+	guildID := ctx.Message.GuildID
 	queryString := `select sum(quantity) from discord_messages where guild_id='%s' group by channel_id`
 	queryString = fmt.Sprintf(queryString, guildID)
 	q := influx.NewQuery(queryString, "discord_bot_stats", "")
@@ -44,7 +44,7 @@ func guildStatsCommand(s *discordgo.Session, event *command.TextCommandEvent) (r
 	if len(result.Series) < 1 { return "No Stats"}
 	channelActivityText := ""
 	for _, series := range result.Series {
-		channel, err := s.State.Channel(series.Tags["channel_id"])
+		channel, err := ctx.Bot.State.Channel(series.Tags["channel_id"])
 		if err != nil {
 			log.Error(err)
 			continue
@@ -54,6 +54,6 @@ func guildStatsCommand(s *discordgo.Session, event *command.TextCommandEvent) (r
 	embed := command.NewEmbed()
 	embed.SetTitle("Guild Statistics", "")
 	embed.AddField("Channel Activity", channelActivityText, false)
-	s.ChannelMessageSendEmbed(event.Message.ChannelID, embed.MessageEmbed)
+	ctx.Bot.ChannelMessageSendEmbed(ctx.Message.ChannelID, embed.MessageEmbed)
 	return ""
 }

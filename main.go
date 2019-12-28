@@ -8,25 +8,24 @@ import (
 	"os/signal"
 	"syscall"
 
+	_ "github.com/plally/discord_modular_bot/modules/chat_tools"
 	_ "github.com/plally/discord_modular_bot/modules/debug"
 	_ "github.com/plally/discord_modular_bot/modules/nsfw"
 	_ "github.com/plally/discord_modular_bot/modules/statistics"
-	_ "github.com/plally/discord_modular_bot/modules/chat_tools"
 )
 
 var TOKEN = os.Getenv("DISCORD_BOT_TOKEN")
 
 func main() {
-
 	log.SetLevel(log.DebugLevel)
 	log.SetFormatter(&log.TextFormatter{ForceColors: true})
 	log.SetOutput(os.Stdout)
+
 	session, err := discordgo.New("Bot " + TOKEN)
 	if err != nil {
 		log.Error(err)
 		return
 	}
-
 	bot := command.NewBot(session)
 	bot.EnableModule("debug")
 	bot.EnableModule("chat_tools")
