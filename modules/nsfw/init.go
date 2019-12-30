@@ -21,7 +21,9 @@ var E6Session E621Session = E621Session{
 func init() {
 	log.SetFormatter(&log.TextFormatter{ForceColors: true})
 	Module := command.RegisterModule("nsfw")
-	Module.RegisterCommandFunc(">e621", e621Command)
+	Module.RegisterCommandFunc("e621", e621Command).
+		SetUsage("[tags...]").
+		SetDescription("Returns a random image from e621")
 }
 
 func e621Command(ctx *command.CommandContext) (reply string) {

@@ -7,7 +7,18 @@ import (
 
 type Command struct {
 	Name     string
+	Usage string
+	Description string
 	Callback CommandCallback
+}
+
+func (c *Command) SetUsage(s string) (*Command) {
+	c.Usage = s
+	return c
+}
+func (c *Command) SetDescription(s string) (*Command) {
+	c.Description = s
+	return c
 }
 
 type CommandContext struct {
@@ -17,9 +28,9 @@ type CommandContext struct {
 	Bot *Bot
 }
 
-type CommandCallback func(ctx *CommandContext) string
+type CommandCallback func(*CommandContext) string
 
-func parseCommand(cmd string) []string {
+func ParseCommand(cmd string) []string {
 	i := 0
 	var args []string
 	start := 0
@@ -43,6 +54,9 @@ func parseCommand(cmd string) []string {
 		}
 		i++
 	}
-	args = append(args, cmd[start:i])
+	if i <= len(cmd) {
+		args = append(args, cmd[start:i])
+	}
+
 	return args
 }

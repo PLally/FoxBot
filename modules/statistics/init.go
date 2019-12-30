@@ -17,8 +17,10 @@ var client = struct {
 var module *command.Module
 func init() {
 	module = command.RegisterModule("stats")
-	module.RegisterCommandFunc(">user_stats", userStatsCommand)
-	module.RegisterCommandFunc(">stats", guildStatsCommand)
+	module.RegisterCommandFunc("user_stats", userStatsCommand).
+		SetUsage("Returns stats about any @mentioned users")
+	module.RegisterCommandFunc("stats", guildStatsCommand).
+		SetUsage("Returns some statistics about the server")
 	module.OnEnable = OnEnable
 }
 

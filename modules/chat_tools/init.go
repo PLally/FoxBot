@@ -13,9 +13,18 @@ func init() {
 	log.SetFormatter(&log.TextFormatter{ForceColors: true})
 
 	Module := command.RegisterModule("chat_tools")
-	Module.RegisterCommandFunc(">coinflip", coinFlip)
-	Module.RegisterCommandFunc(">info", getDiscordObjectInfo)
-	Module.RegisterCommandFunc(">random", randomCommand)
+
+	Module.RegisterCommandFunc("coinflip", coinFlip).
+		SetUsage("").
+		SetDescription("flips a coin, returns either heads or tails")
+
+	Module.RegisterCommandFunc("info", getDiscordObjectInfo).
+		SetUsage("[user...]").
+		SetDescription("Gets info about users")
+
+	Module.RegisterCommandFunc("random", randomCommand).
+		SetUsage("[set]").
+		SetDescription("Gets a random item from a set.\nvalid values for set are:\n\tfox\n\tuser")
 	source := rand.NewSource(time.Now().UnixNano())
 	random = rand.New(source)
 }

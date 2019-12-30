@@ -19,7 +19,6 @@ func userStats(s *discordgo.Session, user *discordgo.User, guildID string) (repl
 	queryString = fmt.Sprintf(queryString,guildID, user.ID)
 	q := influx.NewQuery(queryString, "discord_bot_stats", "")
 	response, err := client.Query(q); if err != nil || response.Error() != nil {
-
 		return response.Error().Error()
 	}
 	fmt.Println(queryString)

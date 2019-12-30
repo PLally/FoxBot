@@ -12,11 +12,12 @@ import (
 type Bot struct {
 	*discordgo.Session
 	EnabledModules []*Module
+	GetCommandPrefix CommandPrefixFunction
 }
-
+type CommandPrefixFunction func(*discordgo.Session, *discordgo.MessageCreate) string
 type Module struct {
 	Name     string
-	Commands []Command
+	Commands []*Command
 	OnEnable func(*Bot)
 }
 
@@ -24,10 +25,21 @@ type Module struct {
 var Modules = make(map[string]*Module)
 
 // bot methods
-func NewBot(s *discordgo.Session) *Bot {
+func NewBot(s *discordgo.Session, prefix interface{}) *Bot {
+	var prefixFunc CommandPrefixFunction
+	switch prefix := prefix.(type) {
+	case CommandPrefixFunction:
+		prefixFunc = prefix
+	case string:
+		prefixFunc = func(*discordgo.Session, *discordgo.MessageCreate) string { return prefix }
+	default:
+		panic("Unsupported prefix type")
+	}
+
 	bot := &Bot{
 		s,
 		make([]*Module, 0),
+		prefixFunc,
 	}
 
 	s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -64,8 +76,25 @@ func (b *Bot) DisableModule(name string) {
 	log.Warnf("Module %s doesn't exist", name)
 }
 
+func (b *Bot) GetCommand(name string) (*Command) {
+	for _, module := range b.EnabledModules {
+		for _, cmd := range module.Commands {
+			if name == cmd.Name {
+				return cmd
+			}
+		}
+	}
+	return nil
+}
+
 func (b *Bot) CheckCommands(s *discordgo.Session, m *discordgo.MessageCreate) {
-	commandName := GetFirstWord(m.Content)
+	prefix := b.GetCommandPrefix(s, m)
+	if !strings.HasPrefix(m.Content, prefix) {
+		return
+	}
+
+	content := m.Content[len(prefix):]
+	commandName := GetFirstWord(content)
 	for _, module := range b.EnabledModules {
 		if !isModuleEnabledInGuild(m.GuildID) {
 			continue
@@ -76,9 +105,9 @@ func (b *Bot) CheckCommands(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			log.Infof("Executing command %s", cmd.Name)
 			ctx := &CommandContext{
-				InvokedCommand: &cmd,
+				InvokedCommand: cmd,
 				Message: m,
-				Args: parseCommand(m.Content),
+				Args: ParseCommand(content),
 				Bot: b,
 			}
 			reply := cmd.Callback(ctx)
@@ -97,7 +126,7 @@ func RegisterModule(name string) *Module {
 	}
 	m := &Module{
 		name,
-		make([]Command, 0),
+		make([]*Command, 0),
 		func(*Bot) {},
 	}
 	Modules[name] = m
@@ -105,15 +134,15 @@ func RegisterModule(name string) *Module {
 	return m
 }
 
-func (m *Module) RegisterCommandFunc(name string, callback CommandCallback) Command {
-	cmd := Command {
+func (m *Module) RegisterCommandFunc(name string, callback CommandCallback) *Command {
+	cmd := &Command {
 		Name:     name,
 		Callback: callback,
 	}
 	return m.RegisterCommand(cmd)
 }
 
-func (m *Module) RegisterCommand(c Command) Command {
+func (m *Module) RegisterCommand(c *Command) *Command {
 	log.Infof("Registered command %s in module %s", c.Name, m.Name)
 	m.Commands = append(m.Commands, c)
 	return c

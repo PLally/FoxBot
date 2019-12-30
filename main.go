@@ -26,7 +26,7 @@ func main() {
 		log.Error(err)
 		return
 	}
-	bot := command.NewBot(session)
+	bot := command.NewBot(session, ">>")
 	bot.EnableModule("debug")
 	bot.EnableModule("chat_tools")
 	bot.EnableModule("nsfw")
@@ -37,7 +37,7 @@ func main() {
 		log.Error("error opening connection,", err)
 		return
 	}
-	session.UpdateListeningStatus("everything")
+	session.UpdateListeningStatus("Type >help")
 
 	log.Info("Bot Started")
 
