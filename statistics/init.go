@@ -15,6 +15,6 @@ var client = struct {
 	},
 }
 
-func initStats(session *discordgo.Session){
+func initStats(session *discordgo.Session) {
 	session.AddHandler(onBotReady)
 }

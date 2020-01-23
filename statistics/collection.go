@@ -12,7 +12,7 @@ import (
 
 func onBotReady(s *discordgo.Session, ready *discordgo.Ready) {
 	c, err := influx.NewHTTPClient(influx.HTTPConfig{
-		Addr: os.Getenv("INFLUXDB_ADDRESS"),
+		Addr:     os.Getenv("INFLUXDB_ADDRESS"),
 		Password: os.Getenv("INFLUXDB_PASSWORD"),
 		Username: os.Getenv("INFLUXDB_USERNAME"),
 	})
@@ -50,7 +50,7 @@ func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	fields := map[string]interface{}{
 		"quantity": 1,
-		"user_id":    m.Author.ID,
+		"user_id":  m.Author.ID,
 	}
 	point, err := influx.NewPoint("discord_messages", tags, fields, time.Now().UTC())
 	if err != nil {
@@ -59,4 +59,3 @@ func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	client.messageBatch.AddPoint(point)
 }
-

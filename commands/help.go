@@ -49,7 +49,7 @@ func getCommandList(h *dgcommand.CommandRoutingHandler, args []string) string {
 		case *dgcommand.Command:
 			out += v.String()
 		}
-		out +="\n"
+		out += "\n"
 	}
 	return out
 }
