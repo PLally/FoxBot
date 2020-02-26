@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/bwmarrin/discordgo"
+	"github.com/bwmarrin/discordgo
 	"github.com/plally/FoxBot/commands"
 	"github.com/plally/dgcommand"
 	"log"
