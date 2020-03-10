@@ -9,12 +9,10 @@ require (
 	github.com/jinzhu/gorm v1.9.12
 	github.com/lib/pq v1.3.0
 	github.com/plally/dgcommand v0.0.0-20200214070209-2fa996c6c88d
-	github.com/plally/e621 v0.0.0-20200229041520-910c579afcda
+	github.com/plally/e621 v0.0.0-20200310022845-33706ad9df73
 	github.com/plally/subscription_api v0.0.0-20200309224600-ebcb83eb17ca
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/viper v1.6.2
 	golang.org/x/crypto v0.0.0-20200117160349-530e935923ad // indirect
 	golang.org/x/sys v0.0.0-20200122134326-e047566fdf82 // indirect
-
 )
-
