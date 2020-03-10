@@ -22,10 +22,10 @@ func RegisterE621() {
 			ApiKey:    os.Getenv("E621_TOKEN"),
 		},
 	}
-	handler.updatePostCache()
+
 	go func() {
-		time.Sleep(time.Minute * 15)
 		handler.updatePostCache()
+		time.Sleep(time.Minute * 15)
 
 	}()
 	subscription.SetSubTypeHandler("e621", handler)

@@ -42,6 +42,7 @@ func main() {
 	}
 
 	subtypes.RegisterE621()
+	subtypes.RegisterRSS()
 	desttypes.RegisterDiscord(session)
 	//database setup
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
@@ -61,7 +62,7 @@ func main() {
 	// create and add command handlers
 	rootHandler := dgcommand.NewCommandHandler()
 
-	getPrefix := func(dgcommand.CommandContext) string { return ">>" }
+	getPrefix := func(dgcommand.CommandContext) string { return ">" }
 	commands.RegisterCommands(rootHandler, db)
 
 	prefixedRootHandler := dgcommand.WithPrefix(rootHandler, getPrefix)
