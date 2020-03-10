@@ -50,15 +50,13 @@ func mentionInfo(ctx dgcommand.CommandContext, obj string) {
 
 func snowflakeInfo(ctx dgcommand.CommandContext, obj string) {
 	user, err := ctx.S.User(obj)
-	fmt.Println(user)
-	fmt.Println(err)
+
 	e := embed.NewEmbed()
 	e.SetTitle("Snowflake info", "")
 	if user != nil && err == nil {
 		e.SetThumbnailUrl(user.AvatarURL("1024"))
 		e.SetTitle(user.String(), "")
 	}
-
 	snow, err := snowflake.NewSnowflake(obj)
 	if err != nil {
 		ctx.Reply("Error processing snowflake")

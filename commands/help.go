@@ -15,6 +15,7 @@ func helpCommand(ctx dgcommand.CommandContext) {
 	args := strings.Split(ctx.Args[0], " ")
 
 	e.AddField("Help", getCommandList(helpRootHandler, args), false)
+
 	ctx.S.ChannelMessageSendEmbed(ctx.M.ChannelID, e.MessageEmbed)
 }
 
@@ -35,7 +36,7 @@ func getCommandList(h *dgcommand.CommandRoutingHandler, args []string) string {
 		case *dgcommand.CommandRoutingHandler:
 			return getCommandList(v, args)
 		case *dgcommand.Command:
-			return v.String()
+			return "` "+v.String()+" `"
 		}
 	}
 
@@ -44,9 +45,9 @@ func getCommandList(h *dgcommand.CommandRoutingHandler, args []string) string {
 
 		switch v := c.(type) {
 		case *dgcommand.CommandRoutingHandler:
-			out += name + " <subcommand>"
+			out += "` "+name + " <subcommand>"+" `"
 		case *dgcommand.Command:
-			out += v.String()
+			out += "` "+v.String()+" `"
 		}
 		out += "\n"
 	}
