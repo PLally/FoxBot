@@ -7,7 +7,7 @@ import (
 	"github.com/plally/dgcommand"
 	"github.com/plally/subscription_api/subscription"
 )
-
+// TOOD better input validation
 type subClient struct {
 	subscription_client.SubscriptionClient
 }
@@ -32,7 +32,7 @@ func (s subClient) listSubscriptions(ctx dgcommand.CommandContext) {
 
 	msg := "```"
 	for _, sub := range subs {
-		msg = msg + fmt.Sprintf("[%v]: %v - %v ", sub.ID, sub.SubscriptionType.Type, sub.SubscriptionType.Tags)
+		msg = msg + fmt.Sprintf("[%v]: %v - %v\n", sub.ID, sub.SubscriptionType.Type, sub.SubscriptionType.Tags)
 	}
 
 	msg += "```"

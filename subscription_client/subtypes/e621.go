@@ -80,6 +80,7 @@ func (r *E621Handler) GetNewItems(tags string) []subscription.SubscriptionItem {
 	return items
 }
 
+// TODO lookup command aliases
 func (r *E621Handler) Validate(tags string) (string, error) {
 	parsed, err := e621.ParseTags(tags, false)
 	if err != nil {
