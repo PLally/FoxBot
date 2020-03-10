@@ -23,11 +23,11 @@ func (r *RSSHandler) GetNewItems(tags string) []subscription.SubscriptionItem {
 		log.Debug(tags)
 	}
 
+	// TODO parse rss item description and search for an image
 	for _, item := range feed.Items {
 		sub_item := subscription.SubscriptionItem{
 			Title:       item.Title,
 			Url:         item.Link,
-			Description: item.Description,
 			Author:      item.Author.Name,
 			TimeID:      item.PublishedParsed.Unix(),
 		}

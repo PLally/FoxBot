@@ -32,7 +32,7 @@ func (s subClient) listSubscriptions(ctx dgcommand.CommandContext) {
 
 	msg := "```"
 	for _, sub := range subs {
-		msg = msg + fmt.Sprintf("[%v] %v : %v ", sub.ID, sub.SubscriptionType.Subscriptions, sub.SubscriptionType.Tags)
+		msg = msg + fmt.Sprintf("[%v]: %v - %v ", sub.ID, sub.SubscriptionType.Type, sub.SubscriptionType.Tags)
 	}
 
 	msg += "```"
