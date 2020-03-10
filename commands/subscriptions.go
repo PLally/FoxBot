@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"github.com/plally/FoxBot/subscription_client"
 	"github.com/plally/dgcommand"
 	"github.com/plally/subscription_api/subscription"
@@ -46,7 +47,7 @@ func (s subClient) deleteSusbcription(ctx dgcommand.CommandContext) {
 	ctx.Reply("Subscription deleted")
 }
 
-func RegisterSubCommands(r *dgcommand.CommandRoutingHandler) {
+func RegisterSubCommands(r *dgcommand.CommandRoutingHandler, db *gorm.DB) {
 
 	s := subClient{subscription_client.SubscriptionClient{DB:db}}
 	r.AddHandler("delete", dgcommand.NewCommand("deletesub <subtype> [tags...]", s.deleteSusbcription))

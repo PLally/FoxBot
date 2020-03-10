@@ -21,7 +21,7 @@ func RegisterCommands(rootHandler *dgcommand.CommandRoutingHandler, db *gorm.DB)
 	rootHandler.AddHandler(HelpCommand.Name, withLogging(HelpCommand, l))
 
 	subGroup := dgcommand.NewCommandHandler()
-	RegisterSubCommands(subGroup)
+	RegisterSubCommands(subGroup, db)
 	rootHandler.AddHandler("sub", subGroup)
 
 }

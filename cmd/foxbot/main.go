@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/jinzhu/gorm"
+	_ "github.com/lib/pq"
 	"github.com/plally/FoxBot/commands"
 	"github.com/plally/FoxBot/subscription_client/desttypes"
 	"github.com/plally/FoxBot/subscription_client/subtypes"

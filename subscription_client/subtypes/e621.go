@@ -42,7 +42,7 @@ func (r *E621Handler) updatePostCache() {
 	resp, _ := r.Session.GetPosts("", 1)
 	lastId := resp.Posts[len(resp.Posts)-1].ID
 	posts := resp.Posts
-	for i:=1; i<100; i++ {
+	for i:=1; i<5; i++ {
 		resp, err := r.Session.GetPosts("id:<"+strconv.Itoa(lastId), 320)
 		if err  != nil{
 			log.Error(err)
@@ -51,10 +51,9 @@ func (r *E621Handler) updatePostCache() {
 
 		posts = append(posts, resp.Posts...)
 		lastId = resp.Posts[len(resp.Posts)-1].ID
-		fmt.Println(len(posts), lastId)
 		time.Sleep(time.Millisecond*500)
 	}
-	fmt.Println("UPDATED")
+	log.Infof("E621 Post cache is now %v posts", len(posts))
 	r.postCache = posts
 }
 
@@ -76,7 +75,6 @@ func (r *E621Handler) GetNewItems(tags string) []subscription.SubscriptionItem {
 			TimeID:      int64(post.ID),
 			Image:       post.File.URL,
 		}
-		fmt.Println(sub_item.Url)
 		items = append(items, sub_item)
 	}
 	return items
