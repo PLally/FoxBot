@@ -2,12 +2,14 @@ package commands
 
 import (
 	"fmt"
+	"github.com/bwmarrin/discordgo"
 	"github.com/jinzhu/gorm"
+	"github.com/plally/FoxBot/commands/middleware"
 	"github.com/plally/FoxBot/subscription_client"
 	"github.com/plally/dgcommand"
 	"github.com/plally/subscription_api/subscription"
 )
-// TOOD better input validation
+
 type subClient struct {
 	subscription_client.SubscriptionClient
 }
@@ -50,9 +52,20 @@ func (s subClient) deleteSusbcription(ctx dgcommand.CommandContext) {
 func RegisterSubCommands(r *dgcommand.CommandRoutingHandler, db *gorm.DB) {
 
 	s := subClient{subscription_client.SubscriptionClient{DB:db}}
-	r.AddHandler("delete", dgcommand.NewCommand("deletesub <subtype> [tags...]", s.deleteSusbcription))
-	r.AddHandler("list", dgcommand.NewCommand("listsub", s.listSubscriptions))
-	r.AddHandler("add", dgcommand.NewCommand("addsub <subtype> [tags...]", s.subscribeCommand))
+
+	deleteCallback := middleware.Wrap(
+		s.deleteSusbcription,
+		middleware.RequirePermissions(discordgo.PermissionAdministrator),
+	)
+	subscribeCallback := middleware.Wrap(
+		s.subscribeCommand,
+		middleware.RequirePermissions(discordgo.PermissionAdministrator),
+	)
+	r.AddHandler("delete", dgcommand.NewCommand("delete <subtype> [tags...]", deleteCallback))
+
+	r.AddHandler("list", dgcommand.NewCommand("list", s.listSubscriptions))
+
+	r.AddHandler("add", dgcommand.NewCommand("add <subtype> [tags...]", subscribeCallback))
 
 	go subscription.CheckOutDatedSubscriptionTypes(db, 100)
 }

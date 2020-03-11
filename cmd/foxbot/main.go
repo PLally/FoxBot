@@ -35,7 +35,7 @@ func main() {
 	// create and add command handlers
 	rootHandler := dgcommand.NewCommandHandler()
 
-	getPrefix := func(dgcommand.CommandContext) string { return ">" }
+	getPrefix := func(dgcommand.CommandContext) string { return viper.GetString("prefix") }
 	commands.RegisterCommands(rootHandler, db)
 
 	prefixedRootHandler := dgcommand.WithPrefix(rootHandler, getPrefix)
@@ -57,7 +57,7 @@ func setupConfig() {
 	viper.AddConfigPath("/etc/foxbot/")
 	viper.AddConfigPath("$HOME/.foxbot")
 	viper.AddConfigPath(".")
-
+	viper.SetDefault("prefix", ">")
 	err := viper.ReadInConfig()
 	if err != nil { log.Fatal(err) }
 }
