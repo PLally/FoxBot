@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
+	"github.com/plally/FoxBot/subscription_client/subtypes"
+	_ "github.com/plally/FoxBot/subscription_client/subtypes"
 	"github.com/plally/subscription_api/database"
 	"github.com/sirupsen/logrus"
 	"log"
 	"testing"
 )
 
-func makesubclient() (SubscriptionClient){
+func makesubclient() (*SubscriptionClient){
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		"127.0.0.1",
 		"5432",
@@ -28,11 +30,13 @@ func makesubclient() (SubscriptionClient){
 
 	database.Migrate(db)
 
-	subClient := SubscriptionClient{DB:db}
+	subClient := NewSubscriptionClient(db)
+	subtypes.RegisterE621()
+	subtypes.RegisterRSS()
 	return subClient
 }
 
-func teardown(subClient SubscriptionClient) {
+func teardown(subClient *SubscriptionClient) {
 	subClient.DB.Exec("DROP TABLE destinations CASCADE;")
 	subClient.DB.Exec("DROP TABLE subscriptions CASCADE;")
 	subClient.DB.Exec("DROP TABLE subscription_types CASCADE;")

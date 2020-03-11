@@ -20,7 +20,7 @@ func (s subClient) subscribeCommand(ctx dgcommand.CommandContext) {
 	if err != nil { ctx.Error(err); return }
 
 	if sub.ID <= 0 {
-		ctx.Reply("There was a problem subscribe to that")
+		ctx.Reply("There was a problem subscribing to that")
 	}
 
 	ctx.Reply("Subscribed")

@@ -1,9 +1,11 @@
 package subscription_client
 
 import (
+	"errors"
 	"github.com/jinzhu/gorm"
 	_ "github.com/plally/FoxBot/subscription_client/subtypes"
 	"github.com/plally/subscription_api/database"
+	"github.com/plally/subscription_api/subscription"
 )
 
 type SubscriptionClient struct {
@@ -17,8 +19,15 @@ func NewSubscriptionClient(db *gorm.DB) (*SubscriptionClient) {
 		DB: db,
 	}
 }
-
+var (
+	InvalidSubType = errors.New("Invalid subscription type")
+)
 func (s *SubscriptionClient) Subscribe(subType string, tags string, dest string) (*database.Subscription, error) {
+	handler := subscription.GetSubTypeHandler(subType)
+	if handler == nil { return nil,  InvalidSubType }
+	tags, err := handler.Validate(tags)
+	if err != nil { return nil, err }
+
 	subscriptionType := database.SubscriptionType{
 		Type: subType,
 		Tags: tags,
@@ -39,7 +48,7 @@ func (s *SubscriptionClient) Subscribe(subType string, tags string, dest string)
 		SubscriptionTypeID: subscriptionType.ID,
 	}
 
-	err := s.DB.FirstOrCreate(&sub, sub).Error
+	err = s.DB.FirstOrCreate(&sub, sub).Error
 	return &sub, err
 }
 
