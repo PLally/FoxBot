@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"github.com/plally/FoxBot/commands/middleware"
 	"github.com/plally/dgcommand"
 	"github.com/plally/dgcommand/embed"
 	"github.com/plally/e621"
@@ -11,15 +12,6 @@ import (
 
 var e6Session = e621.NewSession("e621.net", "FoxBot/0.1",)
 func e621Func(ctx dgcommand.CommandContext) {
-	channel, err := ctx.S.Channel(ctx.M.ChannelID)
-	if err != nil {
-		ctx.Error(err)
-		return
-	}
-	if !channel.NSFW {
-		ctx.Reply("Command Only Available In NSFW channels")
-		return
-	}
 	resp, err := e6Session.GetPosts("order:random "+ctx.Args[0], 1)
 	if err != nil {
 		ctx.Error(err)
@@ -49,7 +41,7 @@ func e621Func(ctx dgcommand.CommandContext) {
 	ctx.S.ChannelMessageSendEmbed(ctx.M.ChannelID, e.MessageEmbed)
 }
 
-var E621Command = dgcommand.NewCommand("e621 [tags...]", e621Func)
+var E621Command =  dgcommand.NewCommand("e621 [tags...]", middleware.Wrap(e621Func, middleware.RequireNSFW()))
 
 func GetValidContentURL(p *e621.Post) string {
 	urls := []string{
