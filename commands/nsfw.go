@@ -27,7 +27,7 @@ func e621Func(ctx dgcommand.CommandContext) {
 	contentUrl := GetValidContentURL(post)
 	description := strings.Builder{}
 	for _, artist := range post.Tags.Artist {
-		artistString := fmt.Sprintf("[%[1]v](https://e926.net/post?tags=%[1]v), ", artist)
+		artistString := fmt.Sprintf("[%[1]v](https://e621.net/post?tags=%[1]v), ", artist)
 		description.WriteString(artistString)
 	}
 	if contentUrl != post.File.URL{
