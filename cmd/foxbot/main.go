@@ -30,7 +30,6 @@ func main() {
 	session := makeSession()
 	createLogger(session)
 	db := setupDb()
-
 	subtypes.RegisterE621()
 	subtypes.RegisterRSS()
 	desttypes.RegisterDiscord(session)
@@ -45,7 +44,10 @@ func main() {
 	prefixedRootHandler := dgcommand.WithPrefix(rootHandler, getPrefix)
 
 	session.AddHandler(dgcommand.DiscordHandle(prefixedRootHandler))
-
+	session.UpdateStatus(
+		0,
+		fmt.Sprintf("type `%vhelp` for a list of commands", viper.GetString("prefix")),
+	)
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
@@ -58,8 +60,11 @@ func createLogger(session *discordgo.Session) {
 	if err != nil {
 		log.Fatalf("Failed to open log file: %v", err)
 	}
-	logrus.SetOutput(file)
-
+	if viper.GetString("environment") == "dev" {
+		logrus.SetOutput(os.Stdout)
+	} else {
+		logrus.SetOutput(file)
+	}
 	session.LogLevel = discordgo.LogDebug
 	discordgo.Logger = func(msgL, caller int, format string, a ...interface{}) {
 		pc, file, line, _ := runtime.Caller(caller)
@@ -130,6 +135,7 @@ func setupDb() *gorm.DB {
 	db = db.LogMode(false)
 	db.SetLogger(logrus.StandardLogger())
 	if *shouldMigrate {
+		log.Info("running database.Migrate")
 		database.Migrate(db)
 		os.Exit(0)
 	}
