@@ -3,6 +3,7 @@ package middleware
 import (
 	"github.com/plally/dgcommand"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"strings"
 )
 
@@ -11,7 +12,7 @@ func RequireNSFW() MiddlewareFunc {
 	return func(h dgcommand.HandlerFunc) dgcommand.HandlerFunc {
 		return func(ctx dgcommand.CommandContext) {
 			channel, err := ctx.S.State.Channel(ctx.M.ChannelID)
-			if err != nil || channel.NSFW {
+			if err != nil || !channel.NSFW {
 				ctx.Reply("You must be in an nsfw channel to do this")
 				return
 			}
@@ -49,6 +50,19 @@ func RequirePermissions(perms ...int) MiddlewareFunc {
 	}
 }
 
+func RequireDev() MiddlewareFunc {
+	return func(h dgcommand.HandlerFunc) dgcommand.HandlerFunc {
+		devs  := viper.GetStringSlice("developers")
+		return func(ctx dgcommand.CommandContext) {
+			for _, id := range devs {
+				if id == ctx.M.Author.ID {
+					h(ctx)
+				}
+			}
+			ctx.Reply("You must be a developer to do this")
+		}
+	}
+}
 func Wrap(f dgcommand.HandlerFunc, middleware ...MiddlewareFunc) dgcommand.HandlerFunc{
 	fn := f
 	for _, mid := range middleware {
