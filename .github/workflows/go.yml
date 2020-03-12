@@ -26,3 +26,6 @@ jobs:
 
     - name: Build
       run: cd cmd/foxbot && go build -v .
+    
+    - name: Test
+      run:  go test ./...
