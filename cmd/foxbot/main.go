@@ -12,10 +12,12 @@ import (
 	"github.com/plally/dgcommand"
 	"github.com/plally/subscription_api/database"
 	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"log"
 	"os"
 	"os/signal"
+	"runtime"
+	"strings"
 	"syscall"
 )
 var (
@@ -24,9 +26,11 @@ var (
 func main() {
 	setupConfig()
 
+
 	session := makeSession()
+	createLogger(session)
 	db := setupDb()
-	
+
 	subtypes.RegisterE621()
 	subtypes.RegisterRSS()
 	desttypes.RegisterDiscord(session)
@@ -49,6 +53,39 @@ func main() {
 	session.Close()
 }
 
+func createLogger(session *discordgo.Session) {
+	file, err := os.OpenFile(viper.GetString("logfile"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("Failed to open log file: %v", err)
+	}
+	logrus.SetOutput(file)
+
+	session.LogLevel = discordgo.LogDebug
+	discordgo.Logger = func(msgL, caller int, format string, a ...interface{}) {
+		pc, file, line, _ := runtime.Caller(caller)
+
+		files := strings.Split(file, "/")
+		file = files[len(files)-1]
+
+		name := runtime.FuncForPC(pc).Name()
+		fns := strings.Split(name, ".")
+		name = fns[len(fns)-1]
+
+		msg := fmt.Sprintf(format, a...)
+
+		msg = fmt.Sprintf("[DG%d] %s:%d:%s() %s\n", msgL, file, line, name, msg)
+		switch msgL {
+		case discordgo.LogError:
+			log.Error(msg)
+		case discordgo.LogWarning:
+			log.Warn(msg)
+		case discordgo.LogDebug:
+			log.Debug(msg)
+		default:
+			log.Info(msg)
+		}
+	}
+}
 func setupConfig() {
 	viper.SetEnvPrefix("FOX_BOT")
 	viper.SetConfigName("foxbot_config")
@@ -58,6 +95,7 @@ func setupConfig() {
 	viper.AddConfigPath("$HOME/.foxbot")
 	viper.AddConfigPath(".")
 	viper.SetDefault("prefix", ">")
+	viper.SetDefault("logfile", "foxbot.log")
 	err := viper.ReadInConfig()
 	if err != nil { log.Fatal(err) }
 }
