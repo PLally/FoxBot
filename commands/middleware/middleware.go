@@ -22,7 +22,7 @@ func RequireNSFW() MiddlewareFunc {
 func LogWith(l *logrus.Logger) MiddlewareFunc{
 	return func(h dgcommand.HandlerFunc) dgcommand.HandlerFunc {
 		return func(ctx dgcommand.CommandContext) {
-			l.Infof("Handling args: ", strings.Join(ctx.Args, ", "))
+			l.Infof("Handling args: %v", strings.Join(ctx.Args, ", "))
 			h(ctx)
 		}
 	}
