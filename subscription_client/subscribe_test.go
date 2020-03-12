@@ -127,3 +127,38 @@ func TestSubscriptionClient_DeleteSubscription(t *testing.T) {
 
 	teardown(subClient)
 }
+
+func TestSubscriptionClient_Recreate(t *testing.T) {
+	subClient := makesubclient()
+
+	// create a subscription
+	sub, err:= subClient.Subscribe("rss", "http://example.com/feed.rss", "312")
+	if err != nil { t.Error(err) }
+
+	if sub.ID <= 0 {
+		t.Fail()
+	}
+
+	// delete
+	err  = subClient.DeleteSubscription("rss", "http://example.com/feed.rss", "312")
+	if err != nil {
+		t.Error(err)
+	}
+	// there should now be no more subs with that destination left
+	subs, err := subClient.GetSubscriptions("312")
+	if err != nil {
+		t.Error(err)
+	}
+	if len(subs) != 0 {
+		t.Fail()
+	}
+
+	//recreate
+	sub, err = subClient.Subscribe("rss", "http://example.com/feed.rss", "312")
+	if err != nil { t.Error(err) }
+
+	if sub.ID <= 0 {
+		t.Fatal("reacreating sub failed")
+	}
+	teardown(subClient)
+}

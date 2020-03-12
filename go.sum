@@ -94,6 +94,8 @@ github.com/plally/subscription_api v0.0.0-20200309224600-ebcb83eb17ca h1:PtY283Q
 github.com/plally/subscription_api v0.0.0-20200309224600-ebcb83eb17ca/go.mod h1:HL9nnwqMsORgLmNQLaBu7GLOQIcKgJ6++XWRT4waJnA=
 github.com/plally/subscription_api v0.0.0-20200311183952-830dfbdc2146 h1:O192K86TRxqgWXdsIa7x34oiKG+pCYPX3rJMd1VnZYw=
 github.com/plally/subscription_api v0.0.0-20200311183952-830dfbdc2146/go.mod h1:HL9nnwqMsORgLmNQLaBu7GLOQIcKgJ6++XWRT4waJnA=
+github.com/plally/subscription_api v0.0.0-20200312023708-a66c7685d65d h1:solZ0KKoWZ2rw1Lnr9/u9jXvAKTNGqQKiY/J6dnrlGU=
+github.com/plally/subscription_api v0.0.0-20200312023708-a66c7685d65d/go.mod h1:HL9nnwqMsORgLmNQLaBu7GLOQIcKgJ6++XWRT4waJnA=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prometheus/client_golang v0.9.1/go.mod h1:7SWBe2y4D6OKWSNQJUaRYU/AaXPKyh/dDVn+NZz0KFw=
 github.com/prometheus/client_golang v0.9.3/go.mod h1:/TN21ttK/J9q6uSwhBd54HahCDft0ttaMvbicHlPoso=
