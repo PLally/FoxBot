@@ -8,6 +8,7 @@ import (
 	"github.com/plally/FoxBot/subscription_client"
 	"github.com/plally/dgcommand"
 	"github.com/plally/subscription_api/subscription"
+	"time"
 )
 
 type subClient struct {
@@ -67,5 +68,8 @@ func RegisterSubCommands(r *dgcommand.CommandRoutingHandler, db *gorm.DB) {
 
 	r.AddHandler("add", dgcommand.NewCommand("add <subtype> [tags...]", subscribeCallback))
 
-	go subscription.CheckOutDatedSubscriptionTypes(db, 100)
+	go func() {
+		subscription.CheckOutDatedSubscriptionTypes(db, 100)
+		time.Sleep(time.Minute*15)
+	}()
 }
