@@ -70,6 +70,11 @@ func (s *SubscriptionClient) GetSubscriptions(dest string) ([]database.Subscript
 }
 
 func (s *SubscriptionClient) DeleteSubscription(subtype string, tags string, dest string) error {
+	handler := subscription.GetSubTypeHandler(subtype)
+	if handler == nil { return InvalidSubType }
+	tags, err := handler.Validate(tags)
+	if err != nil { return err }
+
 	destination := &database.Destination{}
 	if err := s.DB.Where("external_identifier=?", dest).Find(destination).Error; err != nil {
 		return err
@@ -84,6 +89,6 @@ func (s *SubscriptionClient) DeleteSubscription(subtype string, tags string, des
 		SubscriptionTypeID: subscriptionType.ID,
 		DestinationID: destination.ID,
 	}
-	err := s.DB.Delete(&subscription).Error
+	err = s.DB.Delete(&subscription).Error
 	return err
 }

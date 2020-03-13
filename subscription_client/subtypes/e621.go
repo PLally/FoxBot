@@ -5,8 +5,6 @@ import (
 	"github.com/plally/e621"
 	"github.com/plally/subscription_api/subscription"
 	log "github.com/sirupsen/logrus"
-	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -14,22 +12,14 @@ import (
 
 func RegisterE621() {
 	handler := &E621Handler{
-		Session: &e621.Session{
-			BaseURL:   "https://e621.net",
-			UserAgent: "FoxBotSubscriptions/0.1",
-			Client:    &http.Client{},
-			Username:  os.Getenv("E621_USERNAME"),
-			ApiKey:    os.Getenv("E621_TOKEN"),
-		},
+		Session: e621.NewSession("e621.net", "FoxBotSubscriptions/0.1"),
 	}
-
 	go func() {
 		handler.updatePostCache()
 		time.Sleep(time.Minute * 15)
 
 	}()
 	subscription.SetSubTypeHandler("e621", handler)
-
 }
 
 type E621Handler struct {
@@ -53,7 +43,7 @@ func (r *E621Handler) updatePostCache() {
 		lastId = resp.Posts[len(resp.Posts)-1].ID
 		time.Sleep(time.Millisecond*500)
 	}
-	log.Infof("E621 Post cache is now %v posts", len(posts))
+	log.Infof("E621 Post cache now contains %v posts", len(posts))
 	r.postCache = posts
 }
 

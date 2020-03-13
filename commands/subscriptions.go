@@ -46,7 +46,6 @@ func (s subClient) listSubscriptions(ctx dgcommand.CommandContext) {
 func (s subClient) deleteSusbcription(ctx dgcommand.CommandContext) {
 	err := s.DeleteSubscription(ctx.Args[0], ctx.Args[1], ctx.M.ChannelID)
 	if err != nil { ctx.Error(err); return }
-
 	ctx.Reply("Subscription deleted")
 }
 

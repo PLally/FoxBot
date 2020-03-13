@@ -26,7 +26,7 @@ func makesubclient() (*SubscriptionClient){
 		log.Fatal(err)
 	}
 	logrus.SetLevel(logrus.DebugLevel)
-	db = db.LogMode(false)
+	db = db.LogMode(true)
 
 	database.Migrate(db)
 
@@ -104,7 +104,7 @@ func TestSubscriptionClient_DeleteSubscription(t *testing.T) {
 	subClient := makesubclient()
 
 	// create a subscription
-	sub, err:= subClient.Subscribe("rss", "http://example.com/feed.rss", "312")
+	sub, err:= subClient.Subscribe("rss", "https://example.com/feed", "312")
 	if err != nil { t.Error(err) }
 
 	if sub.ID <= 0 {
@@ -112,7 +112,7 @@ func TestSubscriptionClient_DeleteSubscription(t *testing.T) {
 	}
 
 	// delete
-	err  = subClient.DeleteSubscription("rss", "http://example.com/feed.rss", "312")
+	err  = subClient.DeleteSubscription("rss", "https://example.com/feed", "312")
 	if err != nil {
 		t.Error(err)
 	}
@@ -125,7 +125,6 @@ func TestSubscriptionClient_DeleteSubscription(t *testing.T) {
 		t.Fail()
 	}
 
-	teardown(subClient)
 }
 
 func TestSubscriptionClient_Recreate(t *testing.T) {
