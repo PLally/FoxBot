@@ -22,7 +22,9 @@ func (r *RSSHandler) GetNewItems(tags string) []subscription.SubscriptionItem {
 		log.Error(err)
 		log.Debug(tags)
 	}
-
+	if feed == nil || feed.Items == nil {
+		return []subscription.SubscriptionItem{}
+	}
 	// TODO parse rss item description and search for an image
 	for _, item := range feed.Items {
 		sub_item := subscription.SubscriptionItem{
