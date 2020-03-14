@@ -68,7 +68,9 @@ func RegisterSubCommands(r *dgcommand.CommandRoutingHandler, db *gorm.DB) {
 	r.AddHandler("add", dgcommand.NewCommand("add <subtype> [tags...]", subscribeCallback))
 
 	go func() {
-		subscription.CheckOutDatedSubscriptionTypes(db, 100)
-		time.Sleep(time.Minute*15)
+		for {
+			subscription.CheckOutDatedSubscriptionTypes(db, 100)
+			time.Sleep(time.Minute * 15)
+		}
 	}()
 }

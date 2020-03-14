@@ -15,9 +15,10 @@ func RegisterE621() {
 		Session: e621.NewSession("e621.net", "FoxBotSubscriptions/0.1"),
 	}
 	go func() {
-		handler.updatePostCache()
-		time.Sleep(time.Minute * 15)
-
+		for {
+			handler.updatePostCache()
+			time.Sleep(time.Minute * 15)
+		}
 	}()
 	subscription.SetSubTypeHandler("e621", handler)
 }
