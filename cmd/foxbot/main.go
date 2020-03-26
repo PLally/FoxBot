@@ -44,10 +44,7 @@ func main() {
 	prefixedRootHandler := dgcommand.WithPrefix(rootHandler, getPrefix)
 
 	session.AddHandler(dgcommand.DiscordHandle(prefixedRootHandler))
-	session.UpdateStatus(
-		0,
-		fmt.Sprintf("type `%vhelp` for a list of commands", viper.GetString("prefix")),
-	)
+
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
@@ -105,6 +102,12 @@ func setupConfig() {
 	if err != nil { log.Fatal(err) }
 }
 
+func onReady(s *discordgo.Session, r *discordgo.Ready) {
+	s.UpdateStatus(
+		0,
+		fmt.Sprintf("type `%vhelp` for a list of commands", viper.GetString("prefix")),
+	)
+}
 func makeSession() *discordgo.Session {
 
 	TOKEN := viper.GetString("TOKEN")
@@ -113,6 +116,7 @@ func makeSession() *discordgo.Session {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	session.AddHandler(onReady)
 	err = session.Open()
 	if err != nil {
 		log.Fatal("error opening connection,", err)
