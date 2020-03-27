@@ -9,7 +9,6 @@ import (
 
 	"encoding/json"
 	"io/ioutil"
-	"mime"
 	"net/http"
 )
 
@@ -20,21 +19,8 @@ func randomFox(ctx dgcommand.CommandContext) {
 		ctx.Reply("something went wrong fetching the fox")
 		return
 	}
-	contentType := resp.Header.Get("Content-Type")
-	extensions, err := mime.ExtensionsByType(contentType)
 
-	if err != nil {
-		log.Error(err)
-		ctx.Reply("something went wrong fetching the fox")
-		return
-	}
-
-	if extensions == nil || len(extensions) < 1 {
-		ctx.Reply("something went wrong fetching the fox")
-		return
-	}
-
-	ctx.S.ChannelFileSend(ctx.M.ChannelID, "fox"+extensions[0], resp.Body)
+	ctx.S.ChannelFileSend(ctx.M.ChannelID, "fox.png", resp.Body)
 }
 
 var RandomFoxCommand = dgcommand.NewCommand("fox", randomFox)
