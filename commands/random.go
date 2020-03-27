@@ -14,7 +14,7 @@ import (
 )
 
 func randomFox(ctx dgcommand.CommandContext) {
-	resp, err := http.Get("https://api.foxorsomething.net/fox")
+	resp, err := http.Get("https://api.foxorsomething.net/fox/random.png")
 	if err != nil {
 		log.Error(err)
 		ctx.Reply("something went wrong fetching the fox")
