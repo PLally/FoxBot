@@ -30,23 +30,35 @@ type E621Handler struct {
 }
 
 func (r *E621Handler) updatePostCache() {
-	resp, _ := r.Session.GetPosts("", 1)
-	lastId := resp.Posts[len(resp.Posts)-1].ID
-	posts := resp.Posts
-	for i:=1; i<5; i++ {
-		resp, err := r.Session.GetPosts("id:<"+strconv.Itoa(lastId), 320)
-		if err  != nil{
-			log.Error(err)
-			continue
-		}
+	posts, err := r.getRecentPosts(5000)
+	if err != nil {
+		log.Error(err)
+	}
+	log.Infof("E621 Post cache now contains %v posts", len(posts.Posts))
+	r.postCache = posts.Posts
+}
 
-		posts = append(posts, resp.Posts...)
-		lastId = resp.Posts[len(resp.Posts)-1].ID
+func (r *E621Handler) getRecentPosts(amount int) (posts e621.PostsResponse, err error) {
+	var id int
+	s := r.Session
+	for amount > 0 {
+		var resp e621.PostsResponse
+		limit := e621.MAX_LIMIT
+		if amount < limit { limit = amount }
+		tags := ""
+		if id != 0 {
+			tags = "id:<"+strconv.Itoa(id)
+		}
+		resp, err = s.GetPosts(tags, limit)
+		if err != nil { return }
+		id = resp.Posts[len(resp.Posts)-1].ID
+		posts.Posts = append(posts.Posts, resp.Posts...)
+		amount -= limit
 		time.Sleep(time.Millisecond*500)
 	}
-	log.Infof("E621 Post cache now contains %v posts", len(posts))
-	r.postCache = posts
+	return
 }
+
 
 func (r *E621Handler) GetType() string { return "e621" }
 

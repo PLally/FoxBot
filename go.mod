@@ -11,7 +11,7 @@ require (
 	github.com/mmcdole/gofeed v1.0.0-beta2
 	github.com/mmcdole/goxpp v0.0.0-20181012175147-0068e33feabf // indirect
 	github.com/plally/dgcommand v0.0.0-20200310012731-8b16ebb10c4a
-	github.com/plally/e621 v0.0.0-20200313054034-077c92b48171
+	github.com/plally/e621 v0.0.0-20200403010135-ac79ed44570d
 	github.com/plally/subscription_api v0.0.0-20200312023708-a66c7685d65d
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/viper v1.6.2
