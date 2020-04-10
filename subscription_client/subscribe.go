@@ -1,7 +1,7 @@
 package subscription_client
 
 import (
-	"errors"
+	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/plally/FoxBot/subscription_client/subtypes"
 	"github.com/plally/subscription_api/database"
@@ -19,23 +19,27 @@ func NewSubscriptionClient(db *gorm.DB) (*SubscriptionClient) {
 		DB: db,
 	}
 }
-var (
-	InvalidSubType = errors.New("Invalid subscription type")
-)
+
 func (s *SubscriptionClient) Subscribe(subType string, tags string, dest string) (*database.Subscription, error) {
 	handler := subscription.GetSubTypeHandler(subType)
-	if handler == nil { return nil,  InvalidSubType }
+	if handler == nil {
+		return nil, SubError{"Invalid subscription type", nil }
+	}
 	tags, err := handler.Validate(tags)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, SubError{ "Invalid subscription tags", err }
+	}
 
 	subscriptionType := database.SubscriptionType{
 		Type: subType,
 		Tags: tags,
 	}
+
 	destination := database.Destination{
 		ExternalIdentifier:dest,
 		DestinationType:"discord",
 	}
+
 	if err := s.DB.FirstOrCreate(&subscriptionType, subscriptionType).Error; err != nil {
 		return nil, err
 	}
@@ -48,47 +52,68 @@ func (s *SubscriptionClient) Subscribe(subType string, tags string, dest string)
 		SubscriptionTypeID: subscriptionType.ID,
 	}
 
-	err = s.DB.FirstOrCreate(&sub, sub).Error
+	s.DB.First(&sub, sub)
+	if sub.ID != 0 {
+		return &sub, SubError{fmt.Sprintf("Subscription %v : %v already exists", subType, tags), nil }
+	}
+	err = s.DB.Create(&sub).Error
 	return &sub, err
 }
 
 func (s *SubscriptionClient) GetSubscriptions(dest string) ([]database.Subscription, error){
 	var subs []database.Subscription
+
 	destination := &database.Destination{}
+
 	err := s.DB.Where("external_identifier=?", dest).Find(destination).Error
+
 	if err != nil { return nil, err }
-	err = s.DB.Preload("Destination").
+
+	s.DB.Preload("Destination").
 		Preload("SubscriptionType").
 		Where("destination_id=?", destination.ID).
-		Find(&subs).Error
-
-	if err != nil {
-		return nil, err
-	}
+		Find(&subs)
 
 	return subs, nil
 }
 
 func (s *SubscriptionClient) DeleteSubscription(subtype string, tags string, dest string) error {
 	handler := subscription.GetSubTypeHandler(subtype)
-	if handler == nil { return InvalidSubType }
+	if handler == nil { return SubError{"Invalid sub type", nil}}
 	tags, err := handler.Validate(tags)
 	if err != nil { return err }
 
 	destination := &database.Destination{}
 	if err := s.DB.Where("external_identifier=?", dest).Find(destination).Error; err != nil {
-		return err
+		return SubError{"Couldn't find the destination "+dest, err }
 	}
 
 	subscriptionType := database.SubscriptionType{}
 	if err := s.DB.Where("type=? AND tags=?", subtype, tags).Find(&subscriptionType).Error; err != nil {
-		return err
+		return SubError{fmt.Sprintf("Couldnt find subscription type %v : %v", subtype, tags), err }
 	}
 
-	subscription := database.Subscription{
+	sub := database.Subscription{
 		SubscriptionTypeID: subscriptionType.ID,
 		DestinationID: destination.ID,
 	}
-	err = s.DB.Delete(&subscription).Error
-	return err
+	err = s.DB.Delete(&sub).Error
+
+	if err != nil {
+		return SubError{ "Could not delete the subscription", err }
+	}
+	return nil
+}
+
+type SubError struct {
+	s string // a readable message to show to the user
+	err error
+}
+
+func (e SubError) Error() string {
+	return e.s
+}
+
+func (e SubError) Unwrap() error {
+	return e.err
 }
