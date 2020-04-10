@@ -36,14 +36,16 @@ func main() {
 	//database setup
 
 	// create and add command handlers
-	rootHandler := dgcommand.NewCommandHandler()
-
-	getPrefix := func(dgcommand.CommandContext) string { return viper.GetString("prefix") }
+	rootHandler := dgcommand.Group()
+	rootHandler.Desc("FoxBot does stuff")
 	commands.RegisterCommands(rootHandler, db)
 
-	prefixedRootHandler := dgcommand.WithPrefix(rootHandler, getPrefix)
+	prefixed := dgcommand.OnPrefix(viper.GetString("prefix"), rootHandler)
 
-	session.AddHandler(dgcommand.DiscordHandle(prefixedRootHandler))
+	session.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+		ctx := dgcommand.CreateDiscordContext(s, m)
+		prefixed.Handle(ctx)
+	})
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
@@ -54,15 +56,19 @@ func main() {
 
 func createLogger(session *discordgo.Session) {
 	file, err := os.OpenFile(viper.GetString("logfile"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+
 	if err != nil {
 		log.Fatalf("Failed to open log file: %v", err)
 	}
+
 	if viper.GetString("environment") == "dev" {
 		logrus.SetOutput(os.Stdout)
 	} else {
 		logrus.SetOutput(file)
 	}
+
 	session.LogLevel = discordgo.LogDebug
+
 	discordgo.Logger = func(msgL, caller int, format string, a ...interface{}) {
 		pc, file, line, _ := runtime.Caller(caller)
 
@@ -91,13 +97,18 @@ func createLogger(session *discordgo.Session) {
 func setupConfig() {
 	viper.SetEnvPrefix("FOX_BOT")
 	viper.SetConfigName("foxbot_config")
+
 	viper.AutomaticEnv()
+
 	viper.SetConfigType("yaml")
+
 	viper.AddConfigPath("/etc/foxbot/")
 	viper.AddConfigPath("$HOME/.foxbot")
 	viper.AddConfigPath(".")
+
 	viper.SetDefault("prefix", ">")
 	viper.SetDefault("logfile", "foxbot.log")
+
 	err := viper.ReadInConfig()
 	if err != nil { log.Fatal(err) }
 }

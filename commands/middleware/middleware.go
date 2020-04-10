@@ -2,39 +2,33 @@ package middleware
 
 import (
 	"github.com/plally/dgcommand"
-	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
-	"strings"
+
 )
 
-type MiddlewareFunc func(h dgcommand.HandlerFunc) dgcommand.HandlerFunc
-func RequireNSFW() MiddlewareFunc {
+func RequireNSFW() dgcommand.MiddlewareFunc {
 	return func(h dgcommand.HandlerFunc) dgcommand.HandlerFunc {
-		return func(ctx dgcommand.CommandContext) {
-			channel, err := ctx.S.State.Channel(ctx.M.ChannelID)
-			if err != nil || !channel.NSFW {
-				ctx.Reply("You must be in an nsfw channel to do this")
-				return
+		return func(ctx dgcommand.Context) {
+			switch ctx := (ctx).(type) {
+			case *dgcommand.DiscordContext:
+				channel, err := ctx.S.State.Channel(ctx.M.ChannelID)
+				if err != nil || !channel.NSFW {
+					ctx.Reply("You must be in an nsfw channel to do this")
+					return
+				}
+				h(ctx)
 			}
-			h(ctx)
+
+			ctx.Reply("you cant do this")
 		}
 	}
 }
-func LogWith(l *logrus.Logger) MiddlewareFunc{
-	return func(h dgcommand.HandlerFunc) dgcommand.HandlerFunc {
-		return func(ctx dgcommand.CommandContext) {
-			l.Infof("Handling args: %v", strings.Join(ctx.Args, ", "))
-			h(ctx)
-		}
-	}
 
-}
 
-func RequirePermissions(perms ...int) MiddlewareFunc {
+func RequirePermissions(perms ...int) dgcommand.MiddlewareFunc {
 	return func(h dgcommand.HandlerFunc) dgcommand.HandlerFunc {
 		requiredPerms := perms
-		return func(ctx dgcommand.CommandContext) {
-			authorPerms, err := ctx.S.State.UserChannelPermissions(ctx.M.Author.ID, ctx.M.ChannelID)
+		return func(ctx dgcommand.Context) {
+			authorPerms, err := ctx.(*dgcommand.DiscordContext).S.State.UserChannelPermissions(ctx.Message().ID, ctx.Message().ChannelID)
 			if err != nil {
 				ctx.Reply("You dont have the required permissions to do this")
 				return
@@ -48,26 +42,4 @@ func RequirePermissions(perms ...int) MiddlewareFunc {
 			h(ctx)
 		}
 	}
-}
-
-func RequireDev() MiddlewareFunc {
-	return func(h dgcommand.HandlerFunc) dgcommand.HandlerFunc {
-		devs  := viper.GetStringSlice("developers")
-		return func(ctx dgcommand.CommandContext) {
-			for _, id := range devs {
-				if id == ctx.M.Author.ID {
-					h(ctx)
-				}
-			}
-			ctx.Reply("You must be a developer to do this")
-		}
-	}
-}
-func Wrap(f dgcommand.HandlerFunc, middleware ...MiddlewareFunc) dgcommand.HandlerFunc{
-	fn := f
-	for _, mid := range middleware {
-		fn = mid(f)
-	}
-
-	return fn
 }

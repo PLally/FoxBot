@@ -1,50 +1,51 @@
 package commands
 
 import (
+	"fmt"
 	"github.com/plally/dgcommand"
 	"github.com/plally/dgcommand/embed"
 	"strings"
 )
 
-var helpRootHandler *dgcommand.CommandRoutingHandler
+type helpGroup dgcommand.CommandGroup
 
-func helpCommand(ctx dgcommand.CommandContext) {
+
+func (g helpGroup) helpCommand(ctx dgcommand.Context) {
+	ctx = ctx.(*dgcommand.DiscordContext)
 	e := embed.NewEmbed()
 	e.SetTitle("Help", "")
 
-	args := strings.Split(ctx.Args[0], " ")
+	args := strings.Split(ctx.Args()[0], " ")
+	group := dgcommand.CommandGroup(g)
+	e.AddField("Help", getCommandList(&group, args), false)
 
-	e.AddField("Help", getCommandList(helpRootHandler, args), false)
-
-	ctx.S.ChannelMessageSendEmbed(ctx.M.ChannelID, e.MessageEmbed)
+	ctx.SendEmbed(e)
 }
 
-var HelpCommand = dgcommand.NewCommand("help [command...]", helpCommand)
-
-func getCommandList(h *dgcommand.CommandRoutingHandler, args []string) string {
+func getCommandList(h *dgcommand.CommandGroup, args []string) string {
 
 	if len(args) > 0 && args[0] != "" {
 		next := args[0]
 
 		args = args[1:]
-		nextHandler, ok := h.Commands()[next]
+		nextHandler, ok := h.Commands[next]
 		if !ok {
 			return "Couldn't Find a handler: " + next
 		}
 
 		switch v := nextHandler.(type) {
-		case *dgcommand.CommandRoutingHandler:
+		case *dgcommand.CommandGroup:
 			return getCommandList(v, args)
 		case *dgcommand.Command:
-			return "` "+v.String()+" `"
+			return fmt.Sprintf("`%v` : %v", v.String(), v.Description)
 		}
 	}
 
 	var out string
-	for name, c := range h.Commands() {
+	for name, c := range h.Commands {
 
 		switch v := c.(type) {
-		case *dgcommand.CommandRoutingHandler:
+		case *dgcommand.CommandGroup:
 			out += "` "+name + " <subcommand>"+" `"
 		case *dgcommand.Command:
 			out += "` "+v.String()+" `"
