@@ -12,24 +12,20 @@ import (
 	"net/http"
 )
 
-func randomFox(ctx dgcommand.CommandContext) {
+func randomFox(ctx dgcommand.Context) {
 	resp, err := http.Get("https://api.foxorsomething.net/fox/random.png")
 	if err != nil {
-		log.Error(err)
-		ctx.Reply("something went wrong fetching the fox")
+		ctx.Error(err)
 		return
 	}
-
-	ctx.S.ChannelFileSend(ctx.M.ChannelID, "fox.png", resp.Body)
+	ctx.SendFile("fox.png", resp.Body)
 }
 
-var RandomFoxCommand = dgcommand.NewCommand("fox", randomFox)
-
-func randomCat(ctx dgcommand.CommandContext) {
+func randomCat(ctx dgcommand.Context) {
 	resp, err := http.Get("http://aws.random.cat/meow")
 	if err != nil {
 		log.Error(err)
-		ctx.S.ChannelMessageSend(ctx.M.ChannelID, "something went wrong fetching the cat")
+		ctx.Reply("something went wrong fetching the cat")
 	}
 	var dat map[string]string
 	bytes, _ := ioutil.ReadAll(resp.Body)
@@ -37,13 +33,15 @@ func randomCat(ctx dgcommand.CommandContext) {
 	json.Unmarshal(bytes, &dat)
 	e := embed.NewEmbed()
 	e.SetImageUrl(dat["file"])
-	ctx.S.ChannelMessageSendEmbed(ctx.M.ChannelID, e.MessageEmbed)
+	ctx.SendEmbed(e)
 
 }
 
 var RandomCatCommand = dgcommand.NewCommand("cat", randomCat)
 
-func randomUser(ctx dgcommand.CommandContext) {
+func randomUser(genericContext dgcommand.Context) {
+	ctx := genericContext.(*dgcommand.DiscordContext)
+
 	guild, err := ctx.S.State.Guild(ctx.M.GuildID)
 	if err != nil {
 		ctx.S.ChannelMessageSend(ctx.M.ChannelID, "something went wrong")
