@@ -20,7 +20,17 @@ func (s subClient) subscribeCommand(ctx dgcommand.Context) {
 	tags    := ctx.Args()[1]
 
 	sub, err := s.Subscribe(subType, tags, ctx.Message().ChannelID)
-	if err != nil { ctx.Error(err); return }
+
+	if err != nil {
+		switch err.(type) {
+		case subscription_client.SubError:
+			ctx.Reply(err.Error())
+		default:
+			ctx.Error(err)
+		}
+
+		return
+	}
 
 	if sub.ID <= 0 {
 		ctx.Reply("There was a problem subscribing to that")
@@ -31,7 +41,17 @@ func (s subClient) subscribeCommand(ctx dgcommand.Context) {
 
 func (s subClient) listSubscriptions(ctx dgcommand.Context) {
 	subs, err := s.GetSubscriptions(ctx.Message().ChannelID)
-	if err != nil { ctx.Error(err); return }
+
+	if err != nil {
+		switch err.(type) {
+		case subscription_client.SubError:
+			ctx.Reply(err.Error())
+		default:
+			ctx.Error(err)
+		}
+
+		return
+	}
 
 	msg := "```"
 	for _, sub := range subs {
@@ -46,7 +66,17 @@ func (s subClient) listSubscriptions(ctx dgcommand.Context) {
 func (s subClient) deleteSusbcription(ctx dgcommand.Context) {
 	message := ctx.Message()
 	err := s.DeleteSubscription(ctx.Args()[0], ctx.Args()[1], message.ChannelID)
-	if err != nil { ctx.Error(err); return }
+
+	if err != nil {
+		switch err.(type) {
+		case subscription_client.SubError:
+			ctx.Reply(err.Error())
+		default:
+			ctx.Error(err)
+		}
+
+		return
+	}
 	ctx.Reply("Subscription deleted")
 }
 
