@@ -2,23 +2,30 @@ package commands
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/plally/FoxBot/commands/middleware"
 	"github.com/plally/dgcommand"
 )
 
-func RegisterCommands(rootHandler *dgcommand.CommandRoutingHandler, db *gorm.DB) {
-	randomGroup := dgcommand.NewCommandHandler()
-	randomGroup.AddHandler(RandomFoxCommand.Name, RandomFoxCommand)
-	randomGroup.AddHandler(RandomCatCommand.Name, RandomCatCommand)
-	randomGroup.AddHandler(RandomUserCommand.Name, RandomUserCommand)
-	rootHandler.AddHandler("random", randomGroup)
+func RegisterCommands(root *dgcommand.CommandGroup, db *gorm.DB) {
+	randomGroup := dgcommand.Group()
 
-	rootHandler.AddHandler(E621Command.Name, E621Command)
-	rootHandler.AddHandler(DiscordObjInfoCommand.Name, DiscordObjInfoCommand)
+	root.AddHandler("random", randomGroup)
+	randomGroup.Command("fox", randomFox).
+		Desc("a random picture of a fox")
+	randomGroup.Command("cat", randomCat).
+		Desc("a random picture of a cat")
+	randomGroup.Command("user", randomUser).
+		Desc("a random user in this guild")
 
-	helpRootHandler = rootHandler
-	rootHandler.AddHandler(HelpCommand.Name, HelpCommand)
 
-	subGroup := dgcommand.NewCommandHandler()
+	root.Command("e621 [tags...]", e621Func).Use(middleware.RequireNSFW()).
+		Desc("A random picture from e621")
+	root.Command("info <object>", objInfoFunc).
+		Desc("Gets info about the given discord object")
+	root.Command("help [command...]", helpGroup(*root).helpCommand).
+		Desc("shows the help message")
+
+	subGroup := dgcommand.Group()
 	RegisterSubCommands(subGroup, db)
-	rootHandler.AddHandler("sub", subGroup)
+	root.AddHandler("sub", subGroup)
 }

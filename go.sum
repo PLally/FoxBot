@@ -100,6 +100,8 @@ github.com/pelletier/go-toml v1.2.0/go.mod h1:5z9KED0ma1S8pY6P1sdut58dfprrGBbd/9
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/plally/dgcommand v0.0.0-20200310012731-8b16ebb10c4a h1:59eJhA0TRfSRSJ/Vkdog4Q/ee5y8kli17/VneGwvoCI=
 github.com/plally/dgcommand v0.0.0-20200310012731-8b16ebb10c4a/go.mod h1:1kIlulIu75eKOU1VjEjC802ewJ9HQY6rnWz8lE0ubOY=
+github.com/plally/dgcommand v0.0.0-20200410055915-f3a4000db129 h1:GQmNG4uMUrzBQyeYVYi3PpJsxb0+zWJ1JPZhvUTcYdY=
+github.com/plally/dgcommand v0.0.0-20200410055915-f3a4000db129/go.mod h1:1kIlulIu75eKOU1VjEjC802ewJ9HQY6rnWz8lE0ubOY=
 github.com/plally/e621 v0.0.0-20200313054034-077c92b48171 h1:Hu2EcKqmtPxZzTMrb6XOAuMRZHT9wt7ssbSfJOf/SeQ=
 github.com/plally/e621 v0.0.0-20200313054034-077c92b48171/go.mod h1:gy6wt5HGTNaNZ4c5uWRzUt4fb5nG5Yjmb/36lJs+PCk=
 github.com/plally/e621 v0.0.0-20200403010135-ac79ed44570d h1:1OuaOUbMDqSsfqhjCXz/b0TSsxEbYbZ1Cxo8byo7kZY=

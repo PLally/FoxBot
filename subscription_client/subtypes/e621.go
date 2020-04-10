@@ -73,7 +73,7 @@ func (r *E621Handler) GetNewItems(tags string) []subscription.SubscriptionItem {
 		sub_item := subscription.SubscriptionItem{
 			Title:       fmt.Sprintf( "E621 Post #%v", post.ID),
 			Url:         r.Session.PostUrl(post),
-			Description: fmt.Sprintf("Artists %v", strings.Join(post.Tags.Artist, ". ")), // todo use post.Description and truncate this
+			Description: fmt.Sprintf("Artists %v", strings.Join(post.Tags.Artist, ". ")),
 			Author:      strings.Join(post.Tags.Artist,", "),
 			TimeID:      int64(post.ID),
 			Image:       post.File.URL,

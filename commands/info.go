@@ -14,18 +14,23 @@ var (
 	snowflakePattern = regexp.MustCompile("^ *[0-9]+")
 )
 
-func objInfoFunc(ctx dgcommand.CommandContext) {
-	obj := ctx.Args[0]
-	if mentionPattern.MatchString(obj) {
-		mentionInfo(ctx, obj)
-	} else if snowflakePattern.MatchString(obj) {
-		snowflakeInfo(ctx, obj)
-	} else {
-		ctx.Reply("Couldn't give you any info about that object")
+func objInfoFunc(ctx dgcommand.Context) {
+	switch ctx := ctx.(type) {
+	case *dgcommand.DiscordContext:
+		obj := ctx.Args()[0]
+		if mentionPattern.MatchString(obj) {
+			mentionInfo(ctx, obj)
+		} else if snowflakePattern.MatchString(obj) {
+			snowflakeInfo(ctx, obj)
+		} else {
+			ctx.Reply("Couldn't give you any info about that object")
+		}
+	default:
+		ctx.Error("Command info only accepts a discord context")
 	}
 }
 
-func mentionInfo(ctx dgcommand.CommandContext, obj string) {
+func mentionInfo(ctx *dgcommand.DiscordContext, obj string) {
 	objID := strings.ReplaceAll(obj, "!", "")
 	objID = strings.ReplaceAll(objID, "<", "")
 	objID = strings.ReplaceAll(objID, ">", "")
@@ -48,7 +53,7 @@ func mentionInfo(ctx dgcommand.CommandContext, obj string) {
 	ctx.Reply("Couldn't give you any info about that mention")
 }
 
-func snowflakeInfo(ctx dgcommand.CommandContext, obj string) {
+func snowflakeInfo(ctx *dgcommand.DiscordContext, obj string) {
 	user, err := ctx.S.User(obj)
 
 	e := embed.NewEmbed()
@@ -63,7 +68,7 @@ func snowflakeInfo(ctx dgcommand.CommandContext, obj string) {
 		return
 	}
 	e.AddField("Snowflake Info", getSnowflakeString(snow), true)
-	ctx.S.ChannelMessageSendEmbed(ctx.M.ChannelID, e.MessageEmbed)
+	ctx.SendEmbed(e)
 }
 
 func getSnowflakeString(snow snowflake.Snowflake) string {
@@ -76,5 +81,3 @@ func getSnowflakeString(snow snowflake.Snowflake) string {
 		snow.Time.UTC().String(),
 	)
 }
-
-var DiscordObjInfoCommand = dgcommand.NewCommand("info <object>", objInfoFunc)

@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"github.com/plally/FoxBot/commands/middleware"
 	"github.com/plally/dgcommand"
 	"github.com/plally/dgcommand/embed"
 	"github.com/plally/e621"
@@ -11,8 +10,8 @@ import (
 )
 
 var e6Session = e621.NewSession("e621.net", "FoxBot/0.1",)
-func e621Func(ctx dgcommand.CommandContext) {
-	resp, err := e6Session.GetPosts("order:random "+ctx.Args[0], 1)
+func e621Func(ctx dgcommand.Context) {
+	resp, err := e6Session.GetPosts("order:random "+ctx.Args()[0], 1)
 	if err != nil {
 		ctx.Error(err)
 		return
@@ -38,10 +37,9 @@ func e621Func(ctx dgcommand.CommandContext) {
 	e.SetTitle("E621 Post", e6Session.PostUrl(post))
 	e.SetImageUrl(contentUrl)
 	e.Description = description.String()
-	ctx.S.ChannelMessageSendEmbed(ctx.M.ChannelID, e.MessageEmbed)
+	ctx.SendEmbed(e)
 }
 
-var E621Command =  dgcommand.NewCommand("e621 [tags...]", middleware.Wrap(e621Func, middleware.RequireNSFW()))
 
 func GetValidContentURL(p *e621.Post) string {
 	urls := []string{
