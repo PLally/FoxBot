@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/plally/dgcommand"
-
+	log "github.com/sirupsen/logrus"
 )
 
 func RequireNSFW() dgcommand.MiddlewareFunc {
@@ -28,8 +28,9 @@ func RequirePermissions(perms ...int) dgcommand.MiddlewareFunc {
 	return func(h dgcommand.HandlerFunc) dgcommand.HandlerFunc {
 		requiredPerms := perms
 		return func(ctx dgcommand.Context) {
-			authorPerms, err := ctx.(*dgcommand.DiscordContext).S.State.UserChannelPermissions(ctx.Message().ID, ctx.Message().ChannelID)
+			authorPerms, err := ctx.(*dgcommand.DiscordContext).S.UserChannelPermissions(ctx.Message().Author.ID, ctx.Message().ChannelID)
 			if err != nil {
+				log.Error(err)
 				ctx.Reply("You dont have the required permissions to do this")
 				return
 			}

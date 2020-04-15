@@ -26,6 +26,8 @@ func RegisterCommands(root *dgcommand.CommandGroup, db *gorm.DB) {
 		Desc("shows the help message")
 
 	subGroup := dgcommand.Group()
+	subGroup.Desc("Subscribe to updates from websites")
+
 	RegisterSubCommands(subGroup, db)
 	root.AddHandler("sub", subGroup)
 }

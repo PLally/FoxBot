@@ -3,7 +3,7 @@ package commands
 import (
 	"fmt"
 	"github.com/plally/dgcommand"
-	"github.com/plally/dgcommand/embed"
+	"github.com/spf13/viper"
 	"strings"
 )
 
@@ -12,45 +12,76 @@ type helpGroup dgcommand.CommandGroup
 
 func (g helpGroup) helpCommand(ctx dgcommand.Context) {
 	ctx = ctx.(*dgcommand.DiscordContext)
-	e := embed.NewEmbed()
-	e.SetTitle("Help", "")
-
+	builder := strings.Builder{}
+	builder.WriteString("```\n")
 	args := strings.Split(ctx.Args()[0], " ")
-	group := dgcommand.CommandGroup(g)
-	e.AddField("Help", getCommandList(&group, args), false)
+	commandGroup := dgcommand.CommandGroup(g)
 
-	ctx.SendEmbed(e)
+	handler := getRequestedHandler(&commandGroup, args)
+
+	if handler == nil {
+		ctx.Reply(fmt.Sprintf("No help found for %v", strings.Join(ctx.Args(), " ")))
+		return
+	}
+
+	switch handler := handler.(type) {
+	case *dgcommand.CommandGroup:
+		builder.WriteString(args[len(args)-1])
+		builder.WriteByte('\n')
+		builder.WriteString(handler.Description)
+		builder.WriteByte('\n')
+		builder.WriteByte('\n')
+		builder.WriteString(getGroupHelp(handler))
+	case *dgcommand.Command:
+		builder.WriteString(handler.String())
+		builder.WriteString("\n")
+		builder.WriteString(handler.Description)
+	}
+
+	builder.WriteString(fmt.Sprintf(
+		"\n\ntype %vhelp <command> to view help for a specific command\n",
+		viper.GetString("prefix"),
+		))
+	builder.WriteString("```")
+
+	ctx.Reply(builder.String())
 }
 
-func getCommandList(h *dgcommand.CommandGroup, args []string) string {
+func getGroupHelp(group *dgcommand.CommandGroup) string {
+	var builder strings.Builder
+	for name, handler := range group.Commands {
+		switch handler := handler.(type) {
+		case *dgcommand.CommandGroup:
+			builder.WriteString(name+" <subcommand>")
+		case *dgcommand.Command:
+			builder.WriteString(handler.String())
+		}
+		builder.WriteByte('\n')
+	}
+	return builder.String()
+}
+func getRequestedHandler(group *dgcommand.CommandGroup, args []string) dgcommand.Handler {
+	if len(args) == 0 || args[0] == "" {
+		return group
+	}
 
-	if len(args) > 0 && args[0] != "" {
-		next := args[0]
+	var nextHandler dgcommand.Handler = nil
+	for i:=0; i<len(args); i++ {
+		next := args[i]
 
-		args = args[1:]
-		nextHandler, ok := h.Commands[next]
+		var ok bool
+		nextHandler, ok = group.Commands[next]
 		if !ok {
-			return "Couldn't Find a handler: " + next
+			return nil
 		}
 
-		switch v := nextHandler.(type) {
+		switch nextHandler := nextHandler.(type) {
 		case *dgcommand.CommandGroup:
-			return getCommandList(v, args)
+			group = nextHandler
 		case *dgcommand.Command:
-			return fmt.Sprintf("`%v` : %v", v.String(), v.Description)
+			return nextHandler
 		}
 	}
 
-	var out string
-	for name, c := range h.Commands {
-
-		switch v := c.(type) {
-		case *dgcommand.CommandGroup:
-			out += "` "+name + " <subcommand>"+" `"
-		case *dgcommand.Command:
-			out += "` "+v.String()+" `"
-		}
-		out += "\n"
-	}
-	return out
+	return nextHandler
 }

@@ -20,6 +20,8 @@ import (
 	"strings"
 	"syscall"
 )
+// TODO global cooldown
+// TODO global cooldown and ratelimiting on epensive commands such as sub
 var (
 	shouldMigrate = flag.Bool("migrate", false, "perform database migration")
 )
