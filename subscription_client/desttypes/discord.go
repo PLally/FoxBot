@@ -12,7 +12,7 @@ func RegisterDiscord(session *discordgo.Session) {
 	subscription.SetDestinationHandler("discord", &DiscordDestinationHandler{session})
 }
 
-type DiscordDestinationHandler struct{
+type DiscordDestinationHandler struct {
 	session *discordgo.Session
 }
 
@@ -25,7 +25,7 @@ func (d *DiscordDestinationHandler) Dispatch(id string, item subscription.Subscr
 	e.SetTitle(item.Title, item.Url)
 	e.SetDescription(item.Description)
 	e.SetImageUrl(item.Image)
-	e.SetFooter( fmt.Sprintf("subscription: %v - %v", item.Type, item.Tags), "", "")
+	e.SetFooter(fmt.Sprintf("subscription: %v - %v", item.Type, item.Tags), "", "")
 	_, err := d.session.ChannelMessageSendEmbed(id, e.MessageEmbed)
 	if err != nil {
 		logrus.Error(err)

@@ -102,6 +102,8 @@ github.com/plally/dgcommand v0.0.0-20200410055915-f3a4000db129 h1:GQmNG4uMUrzBQy
 github.com/plally/dgcommand v0.0.0-20200410055915-f3a4000db129/go.mod h1:1kIlulIu75eKOU1VjEjC802ewJ9HQY6rnWz8lE0ubOY=
 github.com/plally/e621 v0.0.0-20200403010135-ac79ed44570d h1:1OuaOUbMDqSsfqhjCXz/b0TSsxEbYbZ1Cxo8byo7kZY=
 github.com/plally/e621 v0.0.0-20200403010135-ac79ed44570d/go.mod h1:gy6wt5HGTNaNZ4c5uWRzUt4fb5nG5Yjmb/36lJs+PCk=
+github.com/plally/e621 v0.0.0-20200416053950-09f3ed5f8f47 h1:6dNzwtlBTq4UhA+PjxYpuVrJIfL2t6MELNbvb1/qcVc=
+github.com/plally/e621 v0.0.0-20200416053950-09f3ed5f8f47/go.mod h1:gy6wt5HGTNaNZ4c5uWRzUt4fb5nG5Yjmb/36lJs+PCk=
 github.com/plally/subscription_api v0.0.0-20200312023708-a66c7685d65d h1:solZ0KKoWZ2rw1Lnr9/u9jXvAKTNGqQKiY/J6dnrlGU=
 github.com/plally/subscription_api v0.0.0-20200312023708-a66c7685d65d/go.mod h1:HL9nnwqMsORgLmNQLaBu7GLOQIcKgJ6++XWRT4waJnA=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

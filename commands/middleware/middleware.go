@@ -23,7 +23,6 @@ func RequireNSFW() dgcommand.MiddlewareFunc {
 	}
 }
 
-
 func RequirePermissions(perms ...int) dgcommand.MiddlewareFunc {
 	return func(h dgcommand.HandlerFunc) dgcommand.HandlerFunc {
 		requiredPerms := perms
@@ -35,7 +34,7 @@ func RequirePermissions(perms ...int) dgcommand.MiddlewareFunc {
 				return
 			}
 			for _, perm := range requiredPerms {
-				if !(authorPerms & perm == perm) {
+				if !(authorPerms&perm == perm) {
 					ctx.Reply("You dont have the required permissions to do this")
 					return
 				}

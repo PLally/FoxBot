@@ -9,7 +9,6 @@ import (
 
 type helpGroup dgcommand.CommandGroup
 
-
 func (g helpGroup) helpCommand(ctx dgcommand.Context) {
 	ctx = ctx.(*dgcommand.DiscordContext)
 	builder := strings.Builder{}
@@ -41,7 +40,7 @@ func (g helpGroup) helpCommand(ctx dgcommand.Context) {
 	builder.WriteString(fmt.Sprintf(
 		"\n\ntype %vhelp <command> to view help for a specific command\n",
 		viper.GetString("prefix"),
-		))
+	))
 	builder.WriteString("```")
 
 	ctx.Reply(builder.String())
@@ -52,7 +51,7 @@ func getGroupHelp(group *dgcommand.CommandGroup) string {
 	for name, handler := range group.Commands {
 		switch handler := handler.(type) {
 		case *dgcommand.CommandGroup:
-			builder.WriteString(name+" <subcommand>")
+			builder.WriteString(name + " <subcommand>")
 		case *dgcommand.Command:
 			builder.WriteString(handler.String())
 		}
@@ -66,7 +65,7 @@ func getRequestedHandler(group *dgcommand.CommandGroup, args []string) dgcommand
 	}
 
 	var nextHandler dgcommand.Handler = nil
-	for i:=0; i<len(args); i++ {
+	for i := 0; i < len(args); i++ {
 		next := args[i]
 
 		var ok bool

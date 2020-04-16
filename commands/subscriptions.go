@@ -12,12 +12,12 @@ import (
 )
 
 type subClient struct {
-	subscription_client.SubscriptionClient
+	*subscription_client.SubscriptionClient
 }
 
 func (s subClient) subscribeCommand(ctx dgcommand.Context) {
 	subType := ctx.Args()[0]
-	tags    := ctx.Args()[1]
+	tags := ctx.Args()[1]
 
 	sub, err := s.Subscribe(subType, tags, ctx.Message().ChannelID)
 
@@ -36,7 +36,7 @@ func (s subClient) subscribeCommand(ctx dgcommand.Context) {
 		ctx.Reply("There was a problem subscribing to that")
 	}
 
-	ctx.Reply("Subscribed")
+	ctx.Reply(fmt.Sprintf("Created subscription %v: %v", sub.SubscriptionType.Type, sub.SubscriptionType.Tags))
 }
 
 func (s subClient) listSubscriptions(ctx dgcommand.Context) {
@@ -81,7 +81,7 @@ func (s subClient) deleteSusbcription(ctx dgcommand.Context) {
 }
 
 func RegisterSubCommands(r *dgcommand.CommandGroup, db *gorm.DB) {
-	s := subClient{subscription_client.SubscriptionClient{DB:db}}
+	s := subClient{subscription_client.NewSubscriptionClient(db)}
 	r.AddHandler("list", dgcommand.NewCommand("list", s.listSubscriptions))
 
 	r.Command("delete <subtype> [tags...]", s.deleteSusbcription).

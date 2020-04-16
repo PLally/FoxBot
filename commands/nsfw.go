@@ -9,7 +9,8 @@ import (
 	"strings"
 )
 
-var e6Session = e621.NewSession("e621.net", "FoxBot/0.1",)
+var e6Session = e621.NewSession("e621.net", "FoxBot/0.1")
+
 func e621Func(ctx dgcommand.Context) {
 	resp, err := e6Session.GetPosts("order:random "+ctx.Args()[0], 1)
 	if err != nil {
@@ -29,7 +30,7 @@ func e621Func(ctx dgcommand.Context) {
 		artistString := fmt.Sprintf("[%[1]v](https://e621.net/post?tags=%[1]v), ", artist)
 		description.WriteString(artistString)
 	}
-	if contentUrl != post.File.URL{
+	if contentUrl != post.File.URL {
 		description.WriteString("\n*Click **E621 Post** to view content in its original form*")
 	}
 
@@ -39,7 +40,6 @@ func e621Func(ctx dgcommand.Context) {
 	e.Description = description.String()
 	ctx.SendEmbed(e)
 }
-
 
 func GetValidContentURL(p *e621.Post) string {
 	urls := []string{

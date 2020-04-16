@@ -28,10 +28,10 @@ func (r *RSSHandler) GetNewItems(tags string) []subscription.SubscriptionItem {
 	// TODO parse rss item description and search for an image
 	for _, item := range feed.Items {
 		sub_item := subscription.SubscriptionItem{
-			Title:       item.Title,
-			Url:         item.Link,
-			Author:      item.Author.Name,
-			TimeID:      item.PublishedParsed.Unix(),
+			Title:  item.Title,
+			Url:    item.Link,
+			Author: item.Author.Name,
+			TimeID: item.PublishedParsed.Unix(),
 		}
 		items = append(items, sub_item)
 	}
@@ -41,4 +41,3 @@ func (r *RSSHandler) GetNewItems(tags string) []subscription.SubscriptionItem {
 func (r *RSSHandler) Validate(tags string) (string, error) {
 	return tags, nil
 }
-

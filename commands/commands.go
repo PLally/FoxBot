@@ -17,7 +17,6 @@ func RegisterCommands(root *dgcommand.CommandGroup, db *gorm.DB) {
 	randomGroup.Command("user", randomUser).
 		Desc("a random user in this guild")
 
-
 	root.Command("e621 [tags...]", e621Func).Use(middleware.RequireNSFW()).
 		Desc("A random picture from e621")
 	root.Command("info <object>", objInfoFunc).

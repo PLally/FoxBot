@@ -20,14 +20,15 @@ import (
 	"strings"
 	"syscall"
 )
+
 // TODO global cooldown
 // TODO global cooldown and ratelimiting on epensive commands such as sub
 var (
 	shouldMigrate = flag.Bool("migrate", false, "perform database migration")
 )
+
 func main() {
 	setupConfig()
-
 
 	session := makeSession()
 	createLogger(session)
@@ -112,7 +113,9 @@ func setupConfig() {
 	viper.SetDefault("logfile", "foxbot.log")
 
 	err := viper.ReadInConfig()
-	if err != nil { log.Fatal(err) }
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func onReady(s *discordgo.Session, r *discordgo.Ready) {
@@ -145,7 +148,7 @@ func setupDb() *gorm.DB {
 		viper.GetString("database.password"),
 		viper.GetString("database.dbname"),
 	)
-	db, err :=gorm.Open("postgres", psqlInfo)
+	db, err := gorm.Open("postgres", psqlInfo)
 	if err != nil {
 		log.Fatal(err)
 	}
