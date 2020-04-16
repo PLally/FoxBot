@@ -1,4 +1,4 @@
-package commands
+package random
 
 import (
 	"github.com/plally/dgcommand"

@@ -1,16 +1,13 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
-	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"github.com/plally/FoxBot/commands"
 	"github.com/plally/FoxBot/subscription_client/desttypes"
 	"github.com/plally/FoxBot/subscription_client/subtypes"
 	"github.com/plally/dgcommand"
-	"github.com/plally/subscription_api/database"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -23,25 +20,16 @@ import (
 
 // TODO global cooldown
 // TODO global cooldown and ratelimiting on epensive commands such as sub
-var (
-	shouldMigrate = flag.Bool("migrate", false, "perform database migration")
-)
-
 func main() {
 	setupConfig()
 
 	session := makeSession()
 	createLogger(session)
-	db := setupDb()
 	subtypes.RegisterE621()
 	subtypes.RegisterRSS()
 	desttypes.RegisterDiscord(session)
-	//database setup
-
 	// create and add command handlers
-	rootHandler := dgcommand.Group()
-	rootHandler.Desc("FoxBot does stuff")
-	commands.RegisterCommands(rootHandler, db)
+	rootHandler := commands.CommandGroup()
 
 	prefixed := dgcommand.OnPrefix(viper.GetString("prefix"), rootHandler)
 
@@ -140,25 +128,3 @@ func makeSession() *discordgo.Session {
 	return session
 }
 
-func setupDb() *gorm.DB {
-	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		viper.GetString("database.host"),
-		viper.GetString("database.port"),
-		viper.GetString("database.user"),
-		viper.GetString("database.password"),
-		viper.GetString("database.dbname"),
-	)
-	db, err := gorm.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Fatal(err)
-	}
-	db = db.LogMode(false)
-	db.SetLogger(logrus.StandardLogger())
-	if *shouldMigrate {
-		log.Info("running database.Migrate")
-		database.Migrate(db)
-		os.Exit(0)
-	}
-
-	return db
-}

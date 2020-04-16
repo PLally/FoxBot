@@ -1,14 +1,9 @@
-package commands
+package subscriptions
 
 import (
 	"fmt"
-	"github.com/bwmarrin/discordgo"
-	"github.com/jinzhu/gorm"
-	"github.com/plally/FoxBot/commands/middleware"
 	"github.com/plally/FoxBot/subscription_client"
 	"github.com/plally/dgcommand"
-	"github.com/plally/subscription_api/subscription"
-	"time"
 )
 
 type subClient struct {
@@ -78,22 +73,4 @@ func (s subClient) deleteSusbcription(ctx dgcommand.Context) {
 		return
 	}
 	ctx.Reply("Subscription deleted")
-}
-
-func RegisterSubCommands(r *dgcommand.CommandGroup, db *gorm.DB) {
-	s := subClient{subscription_client.NewSubscriptionClient(db)}
-	r.AddHandler("list", dgcommand.NewCommand("list", s.listSubscriptions))
-
-	r.Command("delete <subtype> [tags...]", s.deleteSusbcription).
-		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator))
-
-	r.Command("add <subtype> [tags...]", s.subscribeCommand).
-		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator))
-
-	go func() {
-		for {
-			subscription.CheckOutDatedSubscriptionTypes(db, 100)
-			time.Sleep(time.Minute * 15)
-		}
-	}()
 }
