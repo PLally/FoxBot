@@ -37,19 +37,17 @@ func randomCat(ctx dgcommand.Context) {
 
 }
 
-var RandomCatCommand = dgcommand.NewCommand("cat", randomCat)
-
 func randomUser(genericContext dgcommand.Context) {
 	ctx := genericContext.(*dgcommand.DiscordContext)
 
 	guild, err := ctx.S.State.Guild(ctx.M.GuildID)
 	if err != nil {
-		ctx.S.ChannelMessageSend(ctx.M.ChannelID, "something went wrong")
+		ctx.Error(err)
+		return
 	}
+
 	source := rand.NewSource(time.Now().UnixNano())
 	random := rand.New(source)
 	user := guild.Members[random.Intn(guild.MemberCount)].User
 	ctx.S.ChannelMessageSend(ctx.M.ChannelID, user.Username+"#"+user.Discriminator)
 }
-
-var RandomUserCommand = dgcommand.NewCommand("user", randomUser)

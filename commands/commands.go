@@ -13,7 +13,7 @@ import (
 func CommandGroup() *dgcommand.CommandGroup {
 	var CommandGroup = dgcommand.Group()
 	CommandGroup.AddHandler("random", random.CommandGroup())
-
+	CommandGroup.Command("ping", ping)
 	CommandGroup.Command("e621 [tags...]", e621Func).Use(middleware.RequireNSFW()).
 		Desc("A random picture from e621")
 	CommandGroup.Command("info <object>", objInfoFunc).

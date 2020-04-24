@@ -18,8 +18,10 @@ import (
 	"syscall"
 )
 
-// TODO global cooldown
-// TODO global cooldown and ratelimiting on epensive commands such as sub
+
+// TODO verbose descriptions with examples
+// TODO only allow n subscriptions per guild
+
 func main() {
 	setupConfig()
 

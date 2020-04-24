@@ -23,13 +23,13 @@ func CommandGroup() *dgcommand.CommandGroup{
 
 	db := setupDb()
 	s := subClient{subscription_client.NewSubscriptionClient(db)}
-	CommandGroup.Command("list", s.listSubscriptions)
+	CommandGroup.Command("list", s.listSubscriptions).Use(middleware.Coooldown(5*time.Second, 3))
 
 	CommandGroup.Command("delete <subtype> [tags...]", s.deleteSusbcription).
-		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator))
+		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator), middleware.Coooldown(5*time.Second, 3))
 
 	CommandGroup.Command("add <subtype> [tags...]", s.subscribeCommand).
-		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator))
+		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator), middleware.Coooldown(7*time.Second, 3))
 
 	go func() {
 		for {
