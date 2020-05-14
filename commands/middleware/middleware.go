@@ -15,7 +15,7 @@ func RequireNSFW() dgcommand.MiddlewareFunc {
 					ctx.Reply("You must be in an nsfw channel to do this")
 					return
 				}
-				h(ctx)
+				h(ctx); return
 			}
 
 			ctx.Reply("you cant do this")
