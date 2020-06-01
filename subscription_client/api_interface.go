@@ -15,12 +15,14 @@ import (
 type SubscriptionClient struct {
 	BaseURL string
 	Client *http.Client
+	Token string
 }
 
-func NewSubscriptionClient(baseURL string) *SubscriptionClient {
+func NewSubscriptionClient(baseURL string, token string) *SubscriptionClient {
 	return &SubscriptionClient{
 		BaseURL: baseURL,
 		Client: &http.Client{},
+		Token: token,
 	}
 }
 
@@ -35,7 +37,7 @@ func (s *SubscriptionClient) Request(method string, endpoint string, body io.Rea
 		q.Set(k,  v)
 	}
 	req.URL.RawQuery = q.Encode()
-
+	req.Header.Set("Authorization", s.Token)
 	log.Debugf("Subscription Client Request made: %s %s", req.Method, req.URL.Path)
 	resp, err := s.Client.Do(req)
 
