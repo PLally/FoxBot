@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/plally/FoxBot/subscription_client"
 	"github.com/plally/dgcommand"
+	"strconv"
 )
 
 type subClient struct {
@@ -14,7 +15,7 @@ func (s subClient) subscribeCommand(ctx dgcommand.Context) {
 	subType := ctx.Args()[0]
 	tags := ctx.Args()[1]
 
-	sub, err := s.Subscribe(subType, tags, ctx.Message().ChannelID)
+	sub, err := s.Subscribe("discord", ctx.Message().ChannelID, subType, tags)
 
 	if err != nil {
 		switch err.(type) {
@@ -23,7 +24,6 @@ func (s subClient) subscribeCommand(ctx dgcommand.Context) {
 		default:
 			ctx.Error(err)
 		}
-
 		return
 	}
 
@@ -35,7 +35,7 @@ func (s subClient) subscribeCommand(ctx dgcommand.Context) {
 }
 
 func (s subClient) listSubscriptions(ctx dgcommand.Context) {
-	subs, err := s.GetSubscriptions(ctx.Message().ChannelID)
+	subs, err := s.FindChannelSubscriptions(ctx.Message().ChannelID)
 
 	if err != nil {
 		switch err.(type) {
@@ -58,6 +58,24 @@ func (s subClient) listSubscriptions(ctx dgcommand.Context) {
 	ctx.Reply(msg)
 }
 
+func (s subClient) deleteSubscriptionID(ctx dgcommand.Context) {
+	id, _ := strconv.Atoi(ctx.Args()[0])
+	sub, err := s.DeleteSubscription(id)
+
+	if err != nil {
+		switch err.(type) {
+		case subscription_client.SubError:
+			ctx.Reply(err.Error())
+		default:
+			ctx.Error(err)
+		}
+
+		return
+	}
+	ctx.Reply(fmt.Sprintf("deleted subscription %v", sub.ID))
+
+}
+/*
 func (s subClient) deleteSusbcription(ctx dgcommand.Context) {
 	message := ctx.Message()
 	err := s.DeleteSubscription(ctx.Args()[0], ctx.Args()[1], message.ChannelID)
@@ -74,3 +92,4 @@ func (s subClient) deleteSusbcription(ctx dgcommand.Context) {
 	}
 	ctx.Reply("Subscription deleted")
 }
+ */

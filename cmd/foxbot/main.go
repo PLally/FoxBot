@@ -5,8 +5,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	_ "github.com/lib/pq"
 	"github.com/plally/FoxBot/commands"
-	"github.com/plally/FoxBot/subscription_client/desttypes"
-	"github.com/plally/FoxBot/subscription_client/subtypes"
 	"github.com/plally/dgcommand"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
@@ -18,16 +16,16 @@ import (
 	"syscall"
 )
 
-// TODO global cooldown
-// TODO global cooldown and ratelimiting on epensive commands such as sub
+
+// TODO verbose descriptions with examples
+// TODO only allow n subscriptions per guild
+
 func main() {
 	setupConfig()
 
 	session := makeSession()
 	createLogger(session)
-	subtypes.RegisterE621()
-	subtypes.RegisterRSS()
-	desttypes.RegisterDiscord(session)
+
 	// create and add command handlers
 	rootHandler := commands.CommandGroup()
 

@@ -1,6 +1,8 @@
 package random
 
-import "github.com/plally/dgcommand"
+import (
+	"github.com/plally/dgcommand"
+)
 
 
 
