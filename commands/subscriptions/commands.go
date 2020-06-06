@@ -23,7 +23,9 @@ func CommandGroup() *dgcommand.CommandGroup{
 		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator), middleware.Coooldown(5*time.Second, 3))
 */
 
-	CommandGroup.Command("deleteid <id>", s.deleteSubscriptionID)
+	CommandGroup.Command("deleteid <id>", s.deleteSubscriptionID).
+		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator))
+
 	CommandGroup.Command("add <subtype> [tags...]", s.subscribeCommand).
 		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator), middleware.Coooldown(7*time.Second, 3))
 
