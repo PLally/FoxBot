@@ -75,21 +75,3 @@ func (s subClient) deleteSubscriptionID(ctx dgcommand.Context) {
 	ctx.Reply(fmt.Sprintf("deleted subscription %v", sub.ID))
 
 }
-/*
-func (s subClient) deleteSusbcription(ctx dgcommand.Context) {
-	message := ctx.Message()
-	err := s.DeleteSubscription(ctx.Args()[0], ctx.Args()[1], message.ChannelID)
-
-	if err != nil {
-		switch err.(type) {
-		case subscription_client.SubError:
-			ctx.Reply(err.Error())
-		default:
-			ctx.Error(err)
-		}
-
-		return
-	}
-	ctx.Reply("Subscription deleted")
-}
- */

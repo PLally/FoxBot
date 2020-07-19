@@ -18,11 +18,6 @@ func CommandGroup() *dgcommand.CommandGroup{
 	s := subClient{subscription_client.NewSubscriptionClient(viper.GetString("subapi_baseurl"), viper.GetString("subapi_token"))}
 	CommandGroup.Command("list", s.listSubscriptions).Use(middleware.Coooldown(5*time.Second, 3))
 
-	/*
-	CommandGroup.Command("delete <subtype> [tags...]", s.deleteSusbcription).
-		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator), middleware.Coooldown(5*time.Second, 3))
-*/
-
 	CommandGroup.Command("deleteid <id>", s.deleteSubscriptionID).
 		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator))
 

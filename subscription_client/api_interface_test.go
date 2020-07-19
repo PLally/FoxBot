@@ -6,7 +6,7 @@ import (
 )
 
 func TestSubscriptionClient_CreateDestination(t *testing.T) {
-	s := NewSubscriptionClient("http://127.0.0.1:8000")
+	s := NewSubscriptionClient("http://127.0.0.1:8000", "")
 	resource, err := s.CreateDestination("12345", "discord")
 	if err != nil {
 		t.Error(err)
@@ -18,7 +18,7 @@ func TestSubscriptionClient_CreateDestination(t *testing.T) {
 }
 
 func TestSubscriptionClient_CreateSubscriptionType(t *testing.T) {
-	s := NewSubscriptionClient("http://127.0.0.1:8000")
+	s := NewSubscriptionClient("http://127.0.0.1:8000", "")
 	resource, err := s.CreateSubscriptionType("e621", "gay")
 	if err != nil {
 		t.Error(err)
@@ -30,9 +30,7 @@ func TestSubscriptionClient_CreateSubscriptionType(t *testing.T) {
 }
 
 func TestSubscriptionClient_CreateSubscription(t *testing.T) {
-	s := NewSubscriptionClient("http://127.0.0.1:8000")
-	// subtype, _ := s.CreateSubscriptionType("rss", "https://blog.golang.org/feed.atom")
-	// dest, _  := s.CreateDestination("1234566", "discord")
+	s := NewSubscriptionClient("http://127.0.0.1:8000", "")
 
 	sub, err := s.CreateSubscription(21, 1)
 	if err != nil {
@@ -46,7 +44,7 @@ func TestSubscriptionClient_CreateSubscription(t *testing.T) {
 }
 
 func TestSubscriptionClient_Subscribe(t *testing.T) {
-	s := NewSubscriptionClient("http://127.0.0.1:8000")
+	s := NewSubscriptionClient("http://127.0.0.1:8000", "")
 
 	sub, err := s.Subscribe("discord", "1234", "e621", "gay")
 	if err != nil {
@@ -60,7 +58,7 @@ func TestSubscriptionClient_Subscribe(t *testing.T) {
 }
 
 func TestSubscriptionClient_FindChannelSubscriptions(t *testing.T) {
-	s := NewSubscriptionClient("http://127.0.0.1:8000")
+	s := NewSubscriptionClient("http://127.0.0.1:8000", "")
 
 	subs, err := s.FindChannelSubscriptions("1234")
 
