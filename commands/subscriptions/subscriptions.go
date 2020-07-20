@@ -11,11 +11,11 @@ type subClient struct {
 	*subscription_client.SubscriptionClient
 }
 
-func (s subClient) subscribeCommand(ctx dgcommand.Context) {
+func (s subClient) subscribeCommand(ctx dgcommand.CommandContext) {
 	subType := ctx.Args()[0]
 	tags := ctx.Args()[1]
 
-	sub, err := s.Subscribe("discord", ctx.Message().ChannelID, subType, tags)
+	sub, err := s.Subscribe("discord", ctx.Message.ChannelID, subType, tags)
 
 	if err != nil {
 		switch err.(type) {
@@ -34,8 +34,8 @@ func (s subClient) subscribeCommand(ctx dgcommand.Context) {
 	ctx.Reply(fmt.Sprintf("Created subscription %v: %v", sub.SubscriptionType.Type, sub.SubscriptionType.Tags))
 }
 
-func (s subClient) listSubscriptions(ctx dgcommand.Context) {
-	subs, err := s.FindChannelSubscriptions(ctx.Message().ChannelID)
+func (s subClient) listSubscriptions(ctx dgcommand.CommandContext) {
+	subs, err := s.FindChannelSubscriptions(ctx.Message.ChannelID)
 
 	if err != nil {
 		switch err.(type) {
@@ -58,7 +58,7 @@ func (s subClient) listSubscriptions(ctx dgcommand.Context) {
 	ctx.Reply(msg)
 }
 
-func (s subClient) deleteSubscriptionID(ctx dgcommand.Context) {
+func (s subClient) deleteSubscriptionID(ctx dgcommand.CommandContext) {
 	id, _ := strconv.Atoi(ctx.Args()[0])
 	sub, err := s.DeleteSubscription(id)
 

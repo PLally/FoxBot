@@ -18,7 +18,7 @@ func CommandGroup() *dgcommand.CommandGroup {
 		Desc("A random picture from e621")
 	CommandGroup.Command("info <object>", objInfoFunc).
 		Desc("Gets info about the given discord object")
-	CommandGroup.Command("help [command...]", helpGroup(*CommandGroup).helpCommand).
+	CommandGroup.Command("help [command...]", helpCommand).
 		Desc("shows the help message")
 
 	CommandGroup.AddHandler("sub", subscriptions.CommandGroup())

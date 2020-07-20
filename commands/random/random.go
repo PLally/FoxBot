@@ -12,7 +12,7 @@ import (
 	"net/http"
 )
 
-func randomFox(ctx dgcommand.Context) {
+func randomFox(ctx dgcommand.CommandContext) {
 	resp, err := http.Get("https://api.foxorsomething.net/fox/random.png")
 	if err != nil {
 		ctx.Error(err)
@@ -21,7 +21,7 @@ func randomFox(ctx dgcommand.Context) {
 	ctx.SendFile("fox.png", resp.Body)
 }
 
-func randomCat(ctx dgcommand.Context) {
+func randomCat(ctx dgcommand.CommandContext) {
 	resp, err := http.Get("http://aws.random.cat/meow")
 	if err != nil {
 		log.Error(err)
@@ -37,10 +37,9 @@ func randomCat(ctx dgcommand.Context) {
 
 }
 
-func randomUser(genericContext dgcommand.Context) {
-	ctx := genericContext.(*dgcommand.DiscordContext)
+func randomUser(ctx dgcommand.CommandContext) {
 
-	guild, err := ctx.S.State.Guild(ctx.M.GuildID)
+	guild, err := ctx.Session.State.Guild(ctx.Message.GuildID)
 	if err != nil {
 		ctx.Error(err)
 		return
@@ -49,5 +48,5 @@ func randomUser(genericContext dgcommand.Context) {
 	source := rand.NewSource(time.Now().UnixNano())
 	random := rand.New(source)
 	user := guild.Members[random.Intn(guild.MemberCount)].User
-	ctx.S.ChannelMessageSend(ctx.M.ChannelID, user.Username+"#"+user.Discriminator)
+	ctx.Session.ChannelMessageSend(ctx.Message.ChannelID, user.Username+"#"+user.Discriminator)
 }

@@ -11,12 +11,12 @@ func Coooldown(decayRate time.Duration, amount uint) dgcommand.MiddlewareFunc{
 	return func(h dgcommand.HandlerFunc) dgcommand.HandlerFunc {
 		cool := cooldownContainer{decayRate: decayRate, amount:amount, cooldowns: make(map[string]*cooldown)}
 
-		return func(ctx dgcommand.Context) {
+		return func(ctx dgcommand.CommandContext) {
 
-			cooldownInstance, ok := cool.cooldowns[ctx.Message().Author.ID]
+			cooldownInstance, ok := cool.cooldowns[ctx.Message.Author.ID]
 			if !ok {
 				cooldownInstance = &cooldown{}
-				cool.cooldowns[ctx.Message().Author.ID] = cooldownInstance
+				cool.cooldowns[ctx.Message.Author.ID] = cooldownInstance
 			}
 			since := time.Since(cooldownInstance.lastRun)
 			subAmount := uint(since/decayRate)

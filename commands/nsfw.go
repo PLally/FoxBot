@@ -11,7 +11,7 @@ import (
 
 var e6Session = e621.NewSession("e621.net", "FoxBot/0.1")
 
-func e621Func(ctx dgcommand.Context) {
+func e621Func(ctx dgcommand.CommandContext) {
 	resp, err := e6Session.GetPosts("order:random "+ctx.Args()[0], 1)
 	if err != nil {
 		ctx.Error(err)

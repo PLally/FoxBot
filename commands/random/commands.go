@@ -1,6 +1,7 @@
 package random
 
 import (
+	"github.com/plally/FoxBot/help"
 	"github.com/plally/dgcommand"
 )
 
@@ -8,6 +9,9 @@ import (
 
 func CommandGroup() *dgcommand.CommandGroup {
 	var CommandGroup = dgcommand.Group()
+
+	CommandGroup.Default(dgcommand.HandlerFunc(help.DefaultHelpHandler))
+
 	CommandGroup.Desc("get a random item")
 
 	CommandGroup.Command("fox", randomFox).
