@@ -14,29 +14,24 @@ var (
 	snowflakePattern = regexp.MustCompile("^ *[0-9]+")
 )
 
-func objInfoFunc(ctx dgcommand.Context) {
-	switch ctx := ctx.(type) {
-	case *dgcommand.DiscordContext:
-		obj := ctx.Args()[0]
-		if mentionPattern.MatchString(obj) {
-			mentionInfo(ctx, obj)
-		} else if snowflakePattern.MatchString(obj) {
-			snowflakeInfo(ctx, obj)
-		} else {
-			ctx.Reply("Couldn't give you any info about that object")
-		}
-	default:
-		ctx.Error("Command info only accepts a discord context")
+func objInfoFunc(ctx dgcommand.CommandContext) {
+	obj := ctx.Args()[0]
+	if mentionPattern.MatchString(obj) {
+		mentionInfo(ctx, obj)
+	} else if snowflakePattern.MatchString(obj) {
+		snowflakeInfo(ctx, obj)
+	} else {
+		ctx.Reply("Couldn't give you any info about that object")
 	}
 }
 
-func mentionInfo(ctx *dgcommand.DiscordContext, obj string) {
+func mentionInfo(ctx dgcommand.CommandContext, obj string) {
 	objID := strings.ReplaceAll(obj, "!", "")
 	objID = strings.ReplaceAll(objID, "<", "")
 	objID = strings.ReplaceAll(objID, ">", "")
 	objID = strings.ReplaceAll(objID, "@", "")
 
-	for _, user := range ctx.M.Mentions {
+	for _, user := range ctx.Message.Mentions {
 		if user.ID == objID {
 			e := embed.NewEmbed()
 			e.SetThumbnailUrl(user.AvatarURL("1024"))
@@ -46,15 +41,15 @@ func mentionInfo(ctx *dgcommand.DiscordContext, obj string) {
 			}
 			e.SetTitle(user.String(), "")
 			e.AddField("Snowflake Info", getSnowflakeString(snow), true)
-			ctx.S.ChannelMessageSendEmbed(ctx.M.ChannelID, e.MessageEmbed)
+			ctx.Session.ChannelMessageSendEmbed(ctx.Message.ChannelID, e.MessageEmbed)
 			return
 		}
 	}
 	ctx.Reply("Couldn't give you any info about that mention")
 }
 
-func snowflakeInfo(ctx *dgcommand.DiscordContext, obj string) {
-	user, err := ctx.S.User(obj)
+func snowflakeInfo(ctx dgcommand.CommandContext, obj string) {
+	user, err := ctx.Session.User(obj)
 
 	e := embed.NewEmbed()
 	e.SetTitle("Snowflake info", "")
