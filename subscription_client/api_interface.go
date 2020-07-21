@@ -65,8 +65,6 @@ func (s *SubscriptionClient) Create(endpoint string, outputModel interface{}, in
 	case http.StatusOK:
 		break
 	default:
-		data, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println(string(data))
 		return SubError{fmt.Sprintf("Unknown error creating resource: %v", resp.StatusCode), nil}
 	}
 

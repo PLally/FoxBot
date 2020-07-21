@@ -49,6 +49,11 @@ func (s subClient) listSubscriptions(ctx dgcommand.CommandContext) {
 	}
 
 	msg := "```"
+
+	if len(subs) == 0 {
+		msg = msg + "No subscriptions in this channel."
+	}
+
 	for _, sub := range subs {
 		msg = msg + fmt.Sprintf("[%v]: %v - %v\n", sub.ID, sub.SubscriptionType.Type, sub.SubscriptionType.Tags)
 	}
@@ -74,4 +79,38 @@ func (s subClient) deleteSubscriptionID(ctx dgcommand.CommandContext) {
 	}
 	ctx.Reply(fmt.Sprintf("deleted subscription %v", sub.ID))
 
+}
+
+func (s subClient) deleteSubscription(ctx dgcommand.CommandContext) {
+
+	subTypeType := ctx.Args()[0]
+	subTypeTags := ctx.Args()[1]
+
+	subs, err := s.FindChannelSubscriptions(ctx.Message.ChannelID)
+
+	if err != nil {
+		switch err.(type) {
+		case subscription_client.SubError:
+			ctx.Reply(err.Error())
+		default:
+			ctx.Error(err)
+		}
+
+		return
+	}
+
+	for _, sub := range subs {
+		if sub.SubscriptionType.Type == subTypeType && sub.SubscriptionType.Tags == subTypeTags {
+			_, err := s.DeleteSubscription(int(sub.ID))
+			if err != nil {
+				ctx.Error(err)
+			}
+
+			subPrintString := fmt.Sprintf("[%v]: %v - %v\n", sub.ID, sub.SubscriptionType.Type, sub.SubscriptionType.Tags)
+			ctx.Reply("Deleted susbcription " + subPrintString)
+			return
+		}
+	}
+
+	ctx.Reply("Couldnt find that subscription")
 }

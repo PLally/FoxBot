@@ -20,10 +20,15 @@ func CommandGroup() *dgcommand.CommandGroup{
 	s := subClient{subscription_client.NewSubscriptionClient(viper.GetString("subapi_baseurl"), viper.GetString("subapi_token"))}
 
 	CommandGroup.Desc("Subsribe to updates from websites")
+
 	CommandGroup.Command("list", s.listSubscriptions).
-		Use(middleware.Coooldown(5*time.Second, 3))
+		Use(middleware.Coooldown(5*time.Second, 3)).
+		Desc("Commands")
 
 	CommandGroup.Command("deleteid <id>", s.deleteSubscriptionID).
+		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator))
+
+	CommandGroup.Command("delete <type> <tags>", s.deleteSubscription).
 		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator))
 
 	CommandGroup.Command("add <subtype> [tags...]", s.subscribeCommand).
