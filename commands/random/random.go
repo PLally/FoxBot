@@ -44,9 +44,10 @@ func randomUser(ctx dgcommand.CommandContext) {
 		ctx.Error(err)
 		return
 	}
-
 	source := rand.NewSource(time.Now().UnixNano())
 	random := rand.New(source)
-	user := guild.Members[random.Intn(guild.MemberCount)].User
+	members, err := ctx.Session.GuildMembers(ctx.Message.GuildID, "", 1000)
+	user := members[random.Intn(guild.MemberCount)].User
+
 	ctx.Session.ChannelMessageSend(ctx.Message.ChannelID, user.Username+"#"+user.Discriminator)
 }

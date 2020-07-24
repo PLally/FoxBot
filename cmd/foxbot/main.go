@@ -32,6 +32,12 @@ func main() {
 	prefixed := dgcommand.OnPrefix(viper.GetString("prefix"), rootHandler)
 
 	session.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Error("Recovered from fatal error: ", r)
+			}
+		}()
+
 		ctx := dgcommand.CreatContext(s, m)
 		ctx.WithValue("rootHandler", rootHandler)
 		prefixed.Handle(ctx)
