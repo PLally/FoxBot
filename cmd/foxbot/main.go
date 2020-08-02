@@ -89,6 +89,7 @@ func createLogger(session *discordgo.Session) {
 			log.Info(msg)
 		}
 	}
+	log.AddHook(WebhookHook(viper.GetString("logging_webhook")))
 }
 func setupConfig() {
 	viper.SetEnvPrefix("FOX_BOT")

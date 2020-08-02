@@ -23,19 +23,22 @@ func CommandGroup() *dgcommand.CommandGroup{
 
 	CommandGroup.Command("list", s.listSubscriptions).
 		Use(middleware.Coooldown(5*time.Second, 3)).
-		Desc("Commands")
+		Desc("List subscriptions in a channel")
 
 	CommandGroup.Command("deleteid <id>", s.deleteSubscriptionID).
-		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator))
+		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator)).
+		Desc("Delete a subscription using its id")
 
 	CommandGroup.Command("delete <type> <tags>", s.deleteSubscription).
-		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator))
+		Use(middleware.RequirePermissions(discordgo.PermissionAdministrator)).
+		Desc("Delete a subscription using its type and tags")
 
 	CommandGroup.Command("add <subtype> [tags...]", s.subscribeCommand).
 		Use(
 			middleware.RequirePermissions(discordgo.PermissionAdministrator),
 			middleware.Coooldown(7*time.Second, 3),
-			)
+			).
+		Desc("Create a subscription\n valid subtypes are e621 and rss \n")
 
 	return CommandGroup
 }
