@@ -8,16 +8,17 @@ import (
 	"path"
 	"strings"
 )
+
 const (
-	E621_NOSCORE = "<:e6_noscore:739285090206613505>"
-	E621_UP = "<:e6_upvote_new:739344985761251359>"
-	E621_DOWN = "<:e6_downvote_new:739344985580765305>"
-	E621_RATING_SAFE = "<:e6_rating_s:739330560471728179>"
-	E621_RATING_QUESTIONABLE = "<:e6_rating_q:739330560664535040>"
-	E621_RATING_EXPLICIT = "<:e6_rating_e:739330560719060992>"
-	E621_FAV_COUNT = "<:e6_fav_count:739349545917481044>"
-	E621_COMMENT_COUNT = "<:e6_comment_count:739353756432597063>"
-	SPACING_EMOTE = "<:nothing:739347008979992636>"
+	E621_NOSCORE                = "<:e6_noscore:739285090206613505>"
+	E621_UP                     = "<:e6_upvote_new:739344985761251359>"
+	E621_DOWN                   = "<:e6_downvote_new:739344985580765305>"
+	E621_RATING_SAFE            = "<:e6_rating_s:739330560471728179>"
+	E621_RATING_QUESTIONABLE    = "<:e6_rating_q:739330560664535040>"
+	E621_RATING_EXPLICIT        = "<:e6_rating_e:739330560719060992>"
+	E621_FAV_COUNT              = "<:e6_fav_count:739349545917481044>"
+	E621_COMMENT_COUNT          = "<:e6_comment_count:739353756432597063>"
+	SPACING_EMOTE               = "<:nothing:739347008979992636>"
 	E621_MAX_DESCRIPTION_LENGTH = 300
 )
 
@@ -65,7 +66,6 @@ func e621Func(ctx dgcommand.CommandContext) {
 	case "s":
 		rating = E621_RATING_SAFE
 	}
-
 
 	infoLine := fmt.Sprintf("%v%v  %v%v  %v** %v**  %v\n\n",
 		arrow, post.Score.Total, E621_FAV_COUNT, post.FavCount, E621_COMMENT_COUNT, post.CommentCount, rating)

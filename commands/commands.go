@@ -2,13 +2,11 @@ package commands
 
 import (
 	"github.com/plally/FoxBot/commands/middleware"
+	"github.com/plally/FoxBot/commands/permissions"
 	"github.com/plally/FoxBot/commands/random"
 	"github.com/plally/FoxBot/commands/subscriptions"
 	"github.com/plally/dgcommand"
 )
-
-
-
 
 func CommandGroup() *dgcommand.CommandGroup {
 	var CommandGroup = dgcommand.Group()
@@ -22,6 +20,6 @@ func CommandGroup() *dgcommand.CommandGroup {
 		Desc("shows the help message")
 
 	CommandGroup.AddHandler("sub", subscriptions.CommandGroup())
-
+	CommandGroup.AddHandler("perms", permissions.CommandGroup())
 	return CommandGroup
 }

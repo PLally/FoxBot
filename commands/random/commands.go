@@ -5,8 +5,6 @@ import (
 	"github.com/plally/dgcommand"
 )
 
-
-
 func CommandGroup() *dgcommand.CommandGroup {
 	var CommandGroup = dgcommand.Group()
 

@@ -10,7 +10,7 @@ import (
 )
 
 type DiscordLogger struct {
-	LogLevels []logrus.Level
+	LogLevels  []logrus.Level
 	webhookUrl string
 	httpClient *http.Client
 }

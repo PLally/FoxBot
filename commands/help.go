@@ -11,7 +11,9 @@ func helpCommand(ctx dgcommand.CommandContext) {
 	args := strings.Split(ctx.Args()[0], " ")
 
 	commandGroup, ok := ctx.Value("rootHandler").(*dgcommand.CommandGroup)
-	if !ok { return }
+	if !ok {
+		return
+	}
 
 	ctx.Reply(help.GetHelp(commandGroup, args))
 }
