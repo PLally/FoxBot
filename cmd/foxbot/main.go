@@ -1,19 +1,26 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	_ "github.com/lib/pq"
 	"github.com/plally/FoxBot/commands"
+	"github.com/plally/FoxBot/permissions"
+	"github.com/plally/FoxBot/permissions/gormstore"
 	"github.com/plally/dgcommand"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm/logger"
 	"os"
 	"os/signal"
 	"runtime"
 	"strings"
 	"syscall"
+	"gorm.io/gorm"
+	dgcommandparsing "github.com/plally/dgcommand/parsing"
 )
 
 
@@ -25,11 +32,15 @@ func main() {
 
 	session := makeSession()
 	createLogger(session)
+	db := makeDB()
 
 	// create and add command handlers
 	rootHandler := commands.CommandGroup()
 
 	prefixed := dgcommand.OnPrefix(viper.GetString("prefix"), rootHandler)
+
+	var store permissions.Store = gormstore.New(db)
+	registerCommandGroupPermissions("commands", store, rootHandler)
 
 	session.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 		defer func() {
@@ -40,6 +51,17 @@ func main() {
 
 		ctx := dgcommand.CreatContext(s, m)
 		ctx.WithValue("rootHandler", rootHandler)
+		ctx.WithValue("permissionsStore", store)
+		ctx.WithValue("permissionsSnowflake", m.Author.ID)
+		ctx.WithValue("database", db)
+
+		ctx.OnError = func(ctx dgcommand.CommandContext, err error) error {
+			if errors.Is(err, dgcommandparsing.ErrMissingArg) {
+				ctx.Reply(err.Error())
+				return nil
+			}
+			return err
+		}
 		prefixed.Handle(ctx)
 	})
 
@@ -117,6 +139,28 @@ func onReady(s *discordgo.Session, r *discordgo.Ready) {
 		0,
 		fmt.Sprintf("type `%vhelp` for a list of commands", viper.GetString("prefix")),
 	)
+}
+
+func makeDB() *gorm.DB {
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		" 127.0.0.1",
+		"5432",
+		"dev",
+		"fox",
+		"fox_bot_dev",
+	)
+
+	log := logger.New(logrus.StandardLogger(), logger.Config{
+		SlowThreshold: 0,
+		Colorful:      false,
+		LogLevel:      logger.Info,
+	})
+
+	db, _ := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{
+		Logger: log,
+	})
+
+	return db
 }
 func makeSession() *discordgo.Session {
 
