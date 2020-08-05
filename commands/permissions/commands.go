@@ -25,7 +25,8 @@ func CommandGroup() *dgcommand.CommandGroup {
 		}
 		user := ctx.Message.Mentions[0]
 		perm := ctx.Args()[1]
-		err := store.SetPermission(user.ID, perm, true)
+		identifier := permissions.GetPermissionsIdentifier(ctx.Message.GuildID, user.ID)
+		err := store.SetPermission(identifier, perm, true)
 		if err != nil {
 			return
 		}
@@ -39,7 +40,8 @@ func CommandGroup() *dgcommand.CommandGroup {
 		}
 		user := ctx.Message.Mentions[0]
 		perm := ctx.Args()[1]
-		err := store.SetPermission(user.ID, perm, false)
+		identifier := permissions.GetPermissionsIdentifier(ctx.Message.GuildID, user.ID)
+		err := store.SetPermission(identifier, perm, false)
 		if err != nil {
 			return
 		}
@@ -53,9 +55,10 @@ func CommandGroup() *dgcommand.CommandGroup {
 		} else {
 			user = ctx.Message.Mentions[len(ctx.Message.Mentions)-1]
 		}
+		identifier := permissions.GetPermissionsIdentifier(ctx.Message.GuildID, user.ID)
 
 		store, _ := ctx.Value("permissionsStore").(permissions.Store)
-		perms, _ := store.GetPermissions(user.ID)
+		perms, _ := store.GetPermissions(identifier)
 		var lines []string
 
 		permsEmbed := embed.NewEmbed()

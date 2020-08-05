@@ -51,7 +51,7 @@ func main() {
 		ctx := dgcommand.CreatContext(s, m)
 		ctx.WithValue("rootHandler", rootHandler)
 		ctx.WithValue("permissionsStore", store)
-		ctx.WithValue("permissionsSnowflake", m.Author.ID)
+		ctx.WithValue("permissionsSnowflake", permissions.GetPermissionsIdentifier(ctx.Message.GuildID, ctx.Message.Author.ID))
 		ctx.WithValue("database", db)
 
 		ctx.OnError = func(ctx dgcommand.CommandContext, err error) error {

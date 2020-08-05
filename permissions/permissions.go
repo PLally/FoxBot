@@ -2,6 +2,7 @@ package permissions
 
 import (
 	"context"
+	"fmt"
 )
 
 type UserPerms map[string]bool
@@ -16,6 +17,10 @@ type Store interface {
 	NewPermission(name string, defaultValue bool) error
 	GetPermissions(userID string) (UserPerms, error)
 	SetPermission(userID string, permName string, value bool) error
+}
+
+func GetPermissionsIdentifier(guildID string, userID string) string {
+	return fmt.Sprintf("%v %v", guildID, userID)
 }
 
 func FromContext(ctx context.Context) (perms UserPerms) {
