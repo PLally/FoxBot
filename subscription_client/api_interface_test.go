@@ -38,7 +38,7 @@ func TestSubscriptionClient_CreateSubscription(t *testing.T) {
 	}
 
 	fmt.Println(sub)
-	if sub.ID == 0  {
+	if sub.ID == 0 {
 		t.Fail()
 	}
 }

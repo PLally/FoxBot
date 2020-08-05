@@ -14,7 +14,7 @@ func GetHelp(commandGroup *dgcommand.CommandGroup, args []string) string {
 	handler := getRequestedHandler(commandGroup, args)
 
 	if handler == nil {
-		return fmt.Sprintf("No help found" )
+		return fmt.Sprintf("No help found")
 	}
 
 	switch handler := handler.(type) {
@@ -87,10 +87,14 @@ func getRequestedHandler(group *dgcommand.CommandGroup, args []string) dgcommand
 
 func DefaultHelpHandler(ctx dgcommand.CommandContext) {
 	paths, ok := ctx.Value("handlerPath").([]string)
-	if !ok { return }
+	if !ok {
+		return
+	}
 
 	handler, ok := ctx.Value("rootHandler").(*dgcommand.CommandGroup)
-	if !ok { return }
+	if !ok {
+		return
+	}
 
 	ctx.Reply(GetHelp(handler, paths))
 }

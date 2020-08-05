@@ -6,14 +6,14 @@ import (
 	"github.com/plally/dgcommand"
 )
 
-var defaults = map[string]bool {
-	"commands.sub.delete": false,
+var defaults = map[string]bool{
+	"commands.sub.delete":   false,
 	"commands.sub.deleteid": false,
-	"commands.sub.add": false,
-	"commands.perms.grant": false,
-	"commands.perms.deny": false,
-
+	"commands.sub.add":      false,
+	"commands.perms.grant":  false,
+	"commands.perms.deny":   false,
 }
+
 func registerCommandGroupPermissions(permName string, store permissions.Store, group *dgcommand.CommandGroup) {
 	for name, handler := range group.Commands {
 		newPermName := permName + "." + name

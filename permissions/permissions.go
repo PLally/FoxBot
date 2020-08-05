@@ -28,7 +28,7 @@ func FromContext(ctx context.Context) (perms UserPerms) {
 		}
 
 		perms, _ = store.GetPermissions(authorID)
-		context.WithValue(ctx,"userPermissions", perms)
+		context.WithValue(ctx, "userPermissions", perms)
 		return perms
 	}
 	return perms

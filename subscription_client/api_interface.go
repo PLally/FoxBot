@@ -14,15 +14,15 @@ import (
 
 type SubscriptionClient struct {
 	BaseURL string
-	Client *http.Client
-	Token string
+	Client  *http.Client
+	Token   string
 }
 
 func NewSubscriptionClient(baseURL string, token string) *SubscriptionClient {
 	return &SubscriptionClient{
 		BaseURL: baseURL,
-		Client: &http.Client{},
-		Token: token,
+		Client:  &http.Client{},
+		Token:   token,
 	}
 }
 
@@ -34,7 +34,7 @@ func (s *SubscriptionClient) Request(method string, endpoint string, body io.Rea
 	}
 	q := req.URL.Query()
 	for k, v := range params {
-		q.Set(k,  v)
+		q.Set(k, v)
 	}
 	req.URL.RawQuery = q.Encode()
 	req.Header.Set("Authorization", s.Token)
@@ -44,24 +44,25 @@ func (s *SubscriptionClient) Request(method string, endpoint string, body io.Rea
 	return resp, err
 }
 
-
-func(s *SubscriptionClient) PostJson(endpoint string, object interface{}) (*http.Response, error) {
+func (s *SubscriptionClient) PostJson(endpoint string, object interface{}) (*http.Response, error) {
 	data, _ := json.Marshal(object)
 	body := bytes.NewReader(data)
 	return s.Request("POST", endpoint, body, map[string]string{})
 }
 
-
-func (s *SubscriptionClient) Create(endpoint string, outputModel interface{}, inputData interface{}) (error) {
+func (s *SubscriptionClient) Create(endpoint string, outputModel interface{}, inputData interface{}) error {
 	resp, err := s.PostJson(endpoint, inputData)
 
 	if err != nil {
 		return err
 	}
-	switch resp.StatusCode{
-	case http.StatusForbidden: return ErrNoPermissions
-	case http.StatusConflict: return ErrAlreadyExists
-	case http.StatusCreated: fallthrough
+	switch resp.StatusCode {
+	case http.StatusForbidden:
+		return ErrNoPermissions
+	case http.StatusConflict:
+		return ErrAlreadyExists
+	case http.StatusCreated:
+		fallthrough
 	case http.StatusOK:
 		break
 	default:
@@ -79,13 +80,13 @@ func (s *SubscriptionClient) CreateDestination(ident, destType string) (database
 
 	err := s.Create("/destinations", &dest, map[string]interface{}{
 		"external_identifier": ident,
-		"destination_type": destType,
+		"destination_type":    destType,
 	})
 
 	return dest, err
 }
 
-func (s *SubscriptionClient) CreateSubscriptionType(typeString, tags string) (database.SubscriptionType, error){
+func (s *SubscriptionClient) CreateSubscriptionType(typeString, tags string) (database.SubscriptionType, error) {
 	var subType database.SubscriptionType
 
 	err := s.Create("/subscription_types", &subType, map[string]interface{}{
@@ -111,10 +112,10 @@ func (s *SubscriptionClient) Subscribe(destType, destIdent, subType, subTags str
 	var sub database.Subscription
 
 	err := s.Create("/subscribe", &sub, map[string]string{
-		"destination_type": destType,
+		"destination_type":       destType,
 		"destination_identifier": destIdent,
-		"subscription_type": subType,
-		"subscription_tags": subTags,
+		"subscription_type":      subType,
+		"subscription_tags":      subTags,
 	})
 
 	return sub, err
@@ -126,7 +127,7 @@ func (s *SubscriptionClient) FindChannelSubscriptions(channelid string) ([]datab
 
 	err := s.Find("/destinations", &destinations, map[string]string{
 		"external_identifier": channelid,
-		"destination_type": "discord",
+		"destination_type":    "discord",
 	})
 
 	if err != nil || len(destinations) == 0 {
@@ -142,8 +143,8 @@ func (s *SubscriptionClient) FindChannelSubscriptions(channelid string) ([]datab
 	return subscriptions, err
 }
 
-func (s *SubscriptionClient) Find(endpoint string, model interface{}, params map[string]string) error{
-	resp, err := s.Request("GET", endpoint, nil, params )
+func (s *SubscriptionClient) Find(endpoint string, model interface{}, params map[string]string) error {
+	resp, err := s.Request("GET", endpoint, nil, params)
 	if err != nil {
 		return err
 	}

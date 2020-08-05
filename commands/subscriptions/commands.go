@@ -10,9 +10,7 @@ import (
 	"time"
 )
 
-
-
-func CommandGroup() *dgcommand.CommandGroup{
+func CommandGroup() *dgcommand.CommandGroup {
 	var CommandGroup = dgcommand.Group()
 
 	CommandGroup.Default(dgcommand.HandlerFunc(help.DefaultHelpHandler))
@@ -37,7 +35,7 @@ func CommandGroup() *dgcommand.CommandGroup{
 		Use(
 			middleware.RequirePermissions(discordgo.PermissionAdministrator),
 			middleware.Coooldown(7*time.Second, 3),
-			).
+		).
 		Desc("Create a subscription\n valid subtypes are e621 and rss \n")
 
 	return CommandGroup

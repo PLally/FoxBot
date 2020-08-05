@@ -8,9 +8,6 @@ import (
 	"github.com/plally/dgcommand"
 )
 
-
-
-
 func CommandGroup() *dgcommand.CommandGroup {
 	var CommandGroup = dgcommand.Group()
 	CommandGroup.AddHandler("random", random.CommandGroup())

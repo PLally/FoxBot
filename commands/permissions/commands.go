@@ -20,7 +20,7 @@ func CommandGroup() *dgcommand.CommandGroup {
 
 	CommandGroup.Command("grant <user> <perm>", func(ctx dgcommand.CommandContext) {
 		store, _ := ctx.Value("permissionsStore").(permissions.Store)
-		if len(ctx.Message.Mentions) <0 {
+		if len(ctx.Message.Mentions) < 0 {
 			return
 		}
 		user := ctx.Message.Mentions[0]
@@ -34,7 +34,7 @@ func CommandGroup() *dgcommand.CommandGroup {
 
 	CommandGroup.Command("deny <user> <perm>", func(ctx dgcommand.CommandContext) {
 		store, _ := ctx.Value("permissionsStore").(permissions.Store)
-		if len(ctx.Message.Mentions) <0 {
+		if len(ctx.Message.Mentions) < 0 {
 			return
 		}
 		user := ctx.Message.Mentions[0]

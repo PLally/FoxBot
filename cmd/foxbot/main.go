@@ -9,20 +9,19 @@ import (
 	"github.com/plally/FoxBot/permissions"
 	"github.com/plally/FoxBot/permissions/gormstore"
 	"github.com/plally/dgcommand"
+	dgcommandparsing "github.com/plally/dgcommand/parsing"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"os"
 	"os/signal"
 	"runtime"
 	"strings"
 	"syscall"
-	"gorm.io/gorm"
-	dgcommandparsing "github.com/plally/dgcommand/parsing"
 )
-
 
 // TODO verbose descriptions with examples
 // TODO only allow n subscriptions per guild
@@ -177,4 +176,3 @@ func makeSession() *discordgo.Session {
 	}
 	return session
 }
-
