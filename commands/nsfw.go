@@ -22,10 +22,18 @@ const (
 	E621_MAX_DESCRIPTION_LENGTH = 300
 )
 
-var e6Session = e621.NewSession("e621.net", "FoxBot/0.1")
+var e621session = e621.NewSession("e621.net", "FoxBot/0.1")
+var e926session = e621.NewSession("e926.net", "FoxBot/0.1")
+func e926Func(ctx dgcommand.CommandContext) {
+	e6command(e926session, ctx)
+}
 
 func e621Func(ctx dgcommand.CommandContext) {
-	resp, err := e6Session.GetPosts("order:random "+ctx.Args()[0], 1)
+	e6command(e621session, ctx)
+}
+
+func e6command(session *e621.Session, ctx dgcommand.CommandContext) {
+	resp, err := session.GetPosts("order:random "+ctx.Args()[0], 1)
 	if err != nil {
 		ctx.Error(err)
 		return
@@ -44,7 +52,7 @@ func e621Func(ctx dgcommand.CommandContext) {
 		if i != 0 {
 			description.WriteString(", ")
 		}
-		artistString := fmt.Sprintf("[%[1]v](https://e621.net/post?tags=%[1]v)", artist)
+		artistString := fmt.Sprintf("[%[1]v](%v/post?tags=%[1]v)", artist, session.BaseURL)
 		description.WriteString(artistString)
 	}
 	description.WriteByte('\n')
@@ -78,11 +86,11 @@ func e621Func(ctx dgcommand.CommandContext) {
 
 	description.WriteString(post.Description)
 	if contentUrl != post.File.URL {
-		description.WriteString(fmt.Sprintf("\n\n*Click **E621 Post %v** to view content in its original form*", post.ID))
+		description.WriteString(fmt.Sprintf("\n\n*Click **Post %v** to view content in its original form*", post.ID))
 	}
 
 	e := embed.NewEmbed()
-	e.SetTitle(fmt.Sprintf("E621 Post %v", post.ID), e6Session.PostUrl(post))
+	e.SetTitle(fmt.Sprintf("Post %v", post.ID), session.PostUrl(post))
 	e.SetImageUrl(contentUrl)
 	e.Description = description.String()
 	ctx.SendEmbed(e)

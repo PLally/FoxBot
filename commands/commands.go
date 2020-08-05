@@ -14,6 +14,8 @@ func CommandGroup() *dgcommand.CommandGroup {
 	CommandGroup.Command("ping", ping)
 	CommandGroup.Command("e621 [tags...]", e621Func).Use(middleware.RequireNSFW()).
 		Desc("A random picture from e621")
+	CommandGroup.Command("e926 [tags...]", e926Func).
+		Desc("A random picture from e926")
 	CommandGroup.Command("info <object>", objInfoFunc).
 		Desc("Gets info about the given discord object")
 	CommandGroup.Command("help [command...]", helpCommand).
