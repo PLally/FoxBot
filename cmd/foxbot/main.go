@@ -143,11 +143,11 @@ func onReady(s *discordgo.Session, r *discordgo.Ready) {
 
 func makeDB() *gorm.DB {
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		" 127.0.0.1",
-		"5432",
-		"dev",
-		"fox",
-		"fox_bot_dev",
+		viper.GetString("database.host"),
+		viper.GetString("database.port"),
+		viper.GetString("database.user"),
+		viper.GetString("database.password"),
+		viper.GetString("database.dbname"),
 	)
 
 	log := logger.New(logrus.StandardLogger(), logger.Config{
