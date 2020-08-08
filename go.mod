@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/bwmarrin/discordgo v0.21.1
-	github.com/jinzhu/gorm v1.9.14 // indirect
+	github.com/jinzhu/gorm v1.9.14
 	github.com/lib/pq v1.3.0
 	github.com/plally/dgcommand v0.1.2
 	github.com/plally/e621 v0.0.0-20200805202043-014f8c35cba0
