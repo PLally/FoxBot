@@ -14,5 +14,3 @@ require (
 	gorm.io/driver/postgres v0.2.6
 	gorm.io/gorm v0.2.26
 )
-
-replace github.com/plally/dgcommand => /home/pierce/go/src/github.com/plally/dgcommand
