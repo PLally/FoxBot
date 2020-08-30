@@ -29,6 +29,7 @@ func (s subClient) subscribeCommand(ctx dgcommand.CommandContext) {
 
 	if sub.ID <= 0 {
 		ctx.Reply("There was a problem subscribing to that")
+		return
 	}
 
 	ctx.Reply(fmt.Sprintf("Created subscription %v: %v", sub.SubscriptionType.Type, sub.SubscriptionType.Tags))
@@ -47,20 +48,19 @@ func (s subClient) listSubscriptions(ctx dgcommand.CommandContext) {
 
 		return
 	}
-
-	msg := "```"
-
+	var paginator paginator
 	if len(subs) == 0 {
-		msg = msg + "No subscriptions in this channel."
+		paginator.Line("No subscriptions in this channel")
 	}
 
 	for _, sub := range subs {
-		msg = msg + fmt.Sprintf("[%v]: %v - %v\n", sub.ID, sub.SubscriptionType.Type, sub.SubscriptionType.Tags)
+		paginator.Line(fmt.Sprintf("[%v]: %v - %v\n", sub.ID, sub.SubscriptionType.Type, sub.SubscriptionType.Tags))
 	}
 
-	msg += "```"
 
-	ctx.Reply(msg)
+	for _, msg := range paginator.GetMessages() {
+		ctx.Reply(msg)
+	}
 }
 
 func (s subClient) deleteSubscriptionID(ctx dgcommand.CommandContext) {

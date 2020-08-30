@@ -1,11 +1,18 @@
 package commands
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/plally/dgcommand"
 	"github.com/plally/dgcommand/embed"
 	"github.com/plally/e621"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
+	"io/ioutil"
+	"net/http"
 	"path"
+	"strconv"
 	"strings"
 )
 
@@ -46,13 +53,33 @@ func e6command(session *e621.Session, ctx dgcommand.CommandContext) {
 	post := posts[0]
 
 	contentUrl := GetValidContentURL(post)
+	description := buildDescription(session.BaseURL, post)
+
+	if path.Ext(contentUrl) == ".webm" {
+
+		ctx.Reply(getEmbedLink(description, session, post))
+		return
+	}
+
+	if contentUrl != post.File.URL {
+		description = description + fmt.Sprintf("\n\n*Click **Post %v** to view content in its original form*", post.ID)
+	}
+
+	e := embed.NewEmbed()
+	e.SetTitle(fmt.Sprintf("Post %v", post.ID), session.PostUrl(post))
+	e.SetImageUrl(contentUrl)
+	e.Description = description
+	ctx.SendEmbed(e)
+}
+
+func buildDescription(baseUrl string, post *e621.Post) string {
 	description := strings.Builder{}
 
 	for i, artist := range post.Tags.Artist {
 		if i != 0 {
 			description.WriteString(", ")
 		}
-		artistString := fmt.Sprintf("[%[1]v](%v/post?tags=%[1]v)", artist, session.BaseURL)
+		artistString := fmt.Sprintf("[%[1]v](%v/post?tags=%[1]v)", artist, baseUrl)
 		description.WriteString(artistString)
 	}
 	description.WriteByte('\n')
@@ -85,15 +112,52 @@ func e6command(session *e621.Session, ctx dgcommand.CommandContext) {
 	}
 
 	description.WriteString(post.Description)
-	if contentUrl != post.File.URL {
-		description.WriteString(fmt.Sprintf("\n\n*Click **Post %v** to view content in its original form*", post.ID))
+	return description.String()
+}
+
+
+type newEmbedPage struct {
+	Meta map[string]string
+	Title string
+	Color string
+	Redirect string
+	Name string
+}
+
+func getEmbedLink(description string, session *e621.Session, post *e621.Post) string {
+	data, _ := json.Marshal(newEmbedPage{
+		Title: fmt.Sprintf("Post %v", post.ID),
+		Redirect: session.PostUrl(post),
+		Name: "e621/" + strconv.Itoa(post.ID),
+		Meta: map[string]string{
+			"og:description": description,
+			"og:video": post.File.URL,
+			"og:type": "video",
+			"og:title": fmt.Sprintf("Post %v", post.ID),
+			"theme-color": "#0000FF",
+		},
+	})
+
+	bodyReader := bytes.NewReader(data)
+	req, _ := http.NewRequest("POST", "https://embed.foxorsomething.net/newpage", bodyReader)
+	req.Header.Set("Authorization", viper.GetString("embed_maker_auth"))
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Error(err)
+		return session.PostUrl(post)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		log.Errorf("%v returned from embed maker", resp.Status)
+		return session.PostUrl(post)
 	}
 
-	e := embed.NewEmbed()
-	e.SetTitle(fmt.Sprintf("Post %v", post.ID), session.PostUrl(post))
-	e.SetImageUrl(contentUrl)
-	e.Description = description.String()
-	ctx.SendEmbed(e)
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	return "https://embed.foxorsomething.net/"+string(body)
 }
 
 func GetValidContentURL(p *e621.Post) string {
@@ -107,6 +171,7 @@ func GetValidContentURL(p *e621.Post) string {
 		".gif": true,
 		".jpg": true,
 		".png": true,
+		".webm": true,
 	}
 
 	for _, url := range urls {
