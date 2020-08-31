@@ -14,8 +14,10 @@ func (p *paginator) Line(s string) {
 	if len(p.builders) == 0 {
 		builder = p.newBuilder()
 	} else if p.msgLength > 1985 {
+		oldBuilder := p.builders[len(p.builders)-1]
+		oldBuilder.WriteString("```")
 		builder = p.newBuilder()
-		builder.WriteString("```")
+
 		p.msgLength = 0
 
 	} else {

@@ -54,7 +54,7 @@ func (s subClient) listSubscriptions(ctx dgcommand.CommandContext) {
 	}
 
 	for _, sub := range subs {
-		paginator.Line(fmt.Sprintf("[%v]: %v - %v\n", sub.ID, sub.SubscriptionType.Type, sub.SubscriptionType.Tags))
+		paginator.Line(fmt.Sprintf("[%v]: %v - %v", sub.ID, sub.SubscriptionType.Type, sub.SubscriptionType.Tags))
 	}
 
 
