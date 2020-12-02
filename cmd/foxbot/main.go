@@ -16,6 +16,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"io"
 	"os"
 	"os/signal"
 	"runtime"
@@ -81,7 +82,8 @@ func createLogger(session *discordgo.Session) {
 	if viper.GetString("environment") == "dev" {
 		logrus.SetOutput(os.Stdout)
 	} else {
-		logrus.SetOutput(file)
+		mw := io.MultiWriter(os.Stdout, file)
+		logrus.SetOutput(mw)
 	}
 
 	session.LogLevel = discordgo.LogDebug
@@ -111,26 +113,6 @@ func createLogger(session *discordgo.Session) {
 		}
 	}
 	log.AddHook(WebhookHook(viper.GetString("logging_webhook")))
-}
-func setupConfig() {
-	viper.SetEnvPrefix("FOX_BOT")
-	viper.SetConfigName("foxbot_config")
-
-	viper.AutomaticEnv()
-
-	viper.SetConfigType("yaml")
-
-	viper.AddConfigPath("/etc/foxbot/")
-	viper.AddConfigPath("$HOME/.foxbot")
-	viper.AddConfigPath(".")
-
-	viper.SetDefault("prefix", ">")
-	viper.SetDefault("logfile", "foxbot.log")
-
-	err := viper.ReadInConfig()
-	if err != nil {
-		log.Fatal(err)
-	}
 }
 
 func onReady(s *discordgo.Session, r *discordgo.Ready) {
@@ -163,11 +145,10 @@ func makeDB() *gorm.DB {
 }
 func makeSession() *discordgo.Session {
 
-	TOKEN := viper.GetString("TOKEN")
-
-	session, err := discordgo.New("Bot " + TOKEN)
+	session, err := discordgo.New("Bot "+viper.GetString("token"))
 	if err != nil {
 		log.Fatal(err.Error())
+		return nil
 	}
 	session.AddHandler(onReady)
 	err = session.Open()

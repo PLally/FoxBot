@@ -3,7 +3,7 @@ module github.com/plally/FoxBot
 go 1.13
 
 require (
-	github.com/bwmarrin/discordgo v0.21.1
+	github.com/bwmarrin/discordgo v0.22.0
 	github.com/jinzhu/gorm v1.9.14 // indirect
 	github.com/lib/pq v1.3.0
 	github.com/plally/dgcommand v0.1.2
